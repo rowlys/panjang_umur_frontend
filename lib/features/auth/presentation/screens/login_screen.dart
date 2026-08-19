@@ -15,6 +15,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+
+  bool _isPasswordHidden = true;
+
   @override
   void dispose() {
     _usernameController.dispose();
@@ -22,70 +25,141 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      // Trigger the login logic via the controller
-      ref.read(authControllerProvider.notifier).logIn(
-        _usernameController.text,
-        _passwordController.text,
-      );
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
-    // 1. Watch the state to rebuild the UI on loading/data changes
+  Widget build(BuildContext context){
     final authState = ref.watch(authControllerProvider);
 
-    // 2. Listen to the state specifically to show error snackbars
     ref.listen(authControllerProvider, (previous, next) {
       if (next.hasError && !next.isLoading) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.error.toString()),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
     });
 
+    void _submit() {
+      FocusScope.of(context).unfocus();
+
+      if (_formKey.currentState!.validate()) {
+        ref.read(authControllerProvider.notifier).logIn(
+          _usernameController.text,
+          _passwordController.text,
+        );
+      }
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Login - Panjang Umur')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-                validator: (value) => value!.isEmpty ? 'Enter your username' : null,
-                // Disable input while loading
-                enabled: !authState.isLoading, 
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Icon(
+                    Icons.lock_person_rounded,
+                    size: 100,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Text(
+                    'Welcome Back!',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Text(
+                    'Log in to Panjang Umur',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: const Icon(Icons.person_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                    ),
+                    validator: (value) => value == null || value.isEmpty ? 'Please enter your username' : null,
+                    enabled: !authState.isLoading,
+                    textInputAction: TextInputAction.next,
+                  ),
+
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _isPasswordHidden,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(_isPasswordHidden ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordHidden = !_isPasswordHidden;
+                          });
+                        },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                    ),
+                    validator: (value) => value == null || value.isEmpty ? 'Please enter your password' : null,
+                    enabled: !authState.isLoading,
+                    onFieldSubmitted: (_) => _submit(),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  FilledButton(
+                    onPressed: authState.isLoading ? null : _submit,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: authState.isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text('Log In', style: TextStyle(fontSize: 16)),
+                  ),
+
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: authState.isLoading ? null : () {
+                      // Navigate to the registration screen
+                      // Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text('Don\'t have an account? Sign Up'),
+                  ),
+                ]
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) => value!.isEmpty ? 'Enter your password' : null,
-                enabled: !authState.isLoading,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: authState.isLoading ? null : _submit,
-                child: authState.isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Log In'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.panjang_umur_frontend"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.rowly.panjang_umur_frontend"
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
