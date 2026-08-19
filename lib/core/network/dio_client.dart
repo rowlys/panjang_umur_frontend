@@ -6,6 +6,28 @@ import 'package:flutter/foundation.dart';
 
 import '../error/exceptions.dart';
 
+String GetApiBaseURL() {
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    return dotenv.env['API_BASE_URL_ANDROID'] ?? '';
+  } else {
+    return dotenv.env['API_BASE_URL'] ?? '';
+  }
+}
+
+String _extractErrorMessage(DioException e, String fallback) {
+    if (e.response?.data != null && e.response?.data is Map<String, dynamic>) {
+      final data = e.response!.data as Map<String, dynamic>;
+      
+      if (data.containsKey('message')) {
+        return data['message'].toString();
+      } else if (data.containsKey('error')) {
+        return data['error'].toString();
+      }
+    }
+    
+    return fallback;
+  }
+
 class DioClient {
   final Dio _dio;
   final FlutterSecureStorage _storage;
@@ -16,7 +38,7 @@ class DioClient {
   bool _isTokenLoaded = false;
 
   DioClient(this._storage, this.onUnauthorized) : _dio = Dio(BaseOptions(
-    baseUrl: dotenv.env['API_BASE_URL'] ?? '',
+    baseUrl: GetApiBaseURL(),
     connectTimeout: const Duration(seconds: 10),
   )) {
     _dio.interceptors.add(InterceptorsWrapper(
@@ -77,14 +99,16 @@ class DioClient {
 
   Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
     try {
-      return _dio.get(path, queryParameters: queryParameters);
+      return await _dio.get(path, queryParameters: queryParameters);
     } on DioException catch (e) {
+      final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
+
       if (e.response?.statusCode == 401) {
-        throw UnauthorizedException('Invalid credentials: ${e.message}');
+        throw UnauthorizedException('Unauthorized: ${serverMessage}');
       } else if (e.type == DioExceptionType.connectionTimeout) {
         throw NetworkException('Connection timeout');
       } else {
-        throw ServerException('Server error: ${e.message}');
+        throw ServerException('Server error: ${serverMessage}');
       }
     } catch (e) {
         throw UnexpectedException('Unexpected error: ${e.toString()}');
@@ -93,14 +117,16 @@ class DioClient {
 
   Future<Response> post(String path, {Object? data}) async {
     try {
-      return _dio.post(path, data: data);
+      return await _dio.post(path, data: data);
     } on DioException catch (e) {
+      final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
+      
       if (e.response?.statusCode == 401) {
-        throw UnauthorizedException('Invalid credentials: ${e.message}');
+        throw UnauthorizedException('Unauthorized: ${serverMessage}');
       } else if (e.type == DioExceptionType.connectionTimeout) {
         throw NetworkException('Connection timeout');
       } else {
-        throw ServerException('Server error: ${e.message}');
+        throw ServerException('Server error: ${serverMessage}');
       } 
     } catch (e) {
         throw UnexpectedException('Unexpected error: ${e.toString()}');
@@ -109,14 +135,16 @@ class DioClient {
 
   Future<Response> put(String path, {Object? data}) async {
     try {
-      return _dio.put(path, data: data);
+      return await _dio.put(path, data: data);
     } on DioException catch (e) {
+      final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
+
       if (e.response?.statusCode == 401) {
-        throw UnauthorizedException('Invalid credentials: ${e.message}');
+        throw UnauthorizedException('Unauthorized: ${serverMessage}');
       } else if (e.type == DioExceptionType.connectionTimeout) {
         throw NetworkException('Connection timeout');
       } else {
-        throw ServerException('Server error: ${e.message}');
+        throw ServerException('Server error: ${serverMessage}');
       }
     } catch (e) {
         throw UnexpectedException('Unexpected error: ${e.toString()}');
@@ -126,14 +154,16 @@ class DioClient {
 
   Future<Response> patch(String path, {Object? data}) async {
     try {
-      return _dio.patch(path, data: data);
+      return await _dio.patch(path, data: data);
     } on DioException catch (e) {
+      final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
+
       if (e.response?.statusCode == 401) {
-        throw UnauthorizedException('Invalid credentials: ${e.message}');
+        throw UnauthorizedException('Unauthorized: ${serverMessage}');
       } else if (e.type == DioExceptionType.connectionTimeout) {
         throw NetworkException('Connection timeout');
       } else {
-        throw ServerException('Server error: ${e.message}');
+        throw ServerException('Server error: ${serverMessage}');
       }
     } catch (e) {
         throw UnexpectedException('Unexpected error: ${e.toString()}');
@@ -142,14 +172,16 @@ class DioClient {
 
   Future<Response> delete(String path, {Object? data}) async {
     try {
-      return _dio.delete(path, data: data);
+      return await _dio.delete(path, data: data);
     } on DioException catch (e) {
+      final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
+
       if (e.response?.statusCode == 401) {
-        throw UnauthorizedException('Invalid credentials: ${e.message}');
+        throw UnauthorizedException('Unauthorized: ${serverMessage}');
       } else if (e.type == DioExceptionType.connectionTimeout) {
         throw NetworkException('Connection timeout');
       } else {
-        throw ServerException('Server error: ${e.message}');
+        throw ServerException('Server error: ${serverMessage}');
       }
     } catch (e) {
         throw UnexpectedException('Unexpected error: ${e.toString()}');
