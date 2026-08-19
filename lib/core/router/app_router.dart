@@ -7,6 +7,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 
 // Screen Imports
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
@@ -32,6 +33,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final authState = ref.read(authControllerProvider);
 
       final isGoingToLogIn = state.uri.path == '/login';
+      final isGoingToRegister = state.uri.path == '/register';
 
       if (authState.isLoading) {
         return null; 
@@ -39,11 +41,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthenticated = authState.valueOrNull != null;
 
-      if (!isAuthenticated && !isGoingToLogIn) {
+      if (!isAuthenticated && !isGoingToLogIn && !isGoingToRegister) {
         return '/login';
       }
 
-      if (isAuthenticated && isGoingToLogIn) {
+      if (isAuthenticated && (isGoingToLogIn || isGoingToRegister)) {
         return '/';
       }
 
@@ -53,6 +55,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: '/',

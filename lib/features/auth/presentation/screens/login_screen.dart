@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../providers/auth_providers.dart';
 
@@ -156,8 +157,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // const SizedBox(height: 2),
                   TextButton(
                     onPressed: authState.isLoading ? null : () {
-                      // Navigate to the registration screen
-                      // Navigator.pushNamed(context, '/register');
+                      context.go('/register');
                     },
                     child: const Text('Don\'t have an account? Sign Up'),
                   ),
