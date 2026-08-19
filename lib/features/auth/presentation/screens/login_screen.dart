@@ -36,6 +36,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             content: Text(next.error.toString()),
             backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0), 
+            ),
           ),
         );
       }
@@ -56,7 +60,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -65,11 +69,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   Icon(
                     Icons.lock_person_rounded,
-                    size: 100,
+                    size: 90,
                     color: Theme.of(context).colorScheme.primary,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
 
                   Text(
                     'Welcome Back!',
@@ -77,7 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
                   Text(
                     'Log in to Panjang Umur',
@@ -85,7 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 16),
 
                   TextFormField(
                     controller: _usernameController,
@@ -102,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textInputAction: TextInputAction.next,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _isPasswordHidden,
@@ -127,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onFieldSubmitted: (_) => _submit(),
                   ),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 16),
 
                   FilledButton(
                     onPressed: authState.isLoading ? null : _submit,
@@ -149,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : const Text('Log In', style: TextStyle(fontSize: 16)),
                   ),
 
-                  const SizedBox(height: 20),
+                  // const SizedBox(height: 2),
                   TextButton(
                     onPressed: authState.isLoading ? null : () {
                       // Navigate to the registration screen
