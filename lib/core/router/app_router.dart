@@ -18,7 +18,7 @@ class RouterNotifier extends ChangeNotifier {
   }
 }
 
-final routerNotifierProvider = ChangeNotifierProvider<RouterNotifier>((ref) {
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
   return RouterNotifier(ref);
 });
 
@@ -31,7 +31,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authState = ref.read(authControllerProvider);
 
-      final isGoingToLogIn = state.matchedLocation == '/login';
+      final isGoingToLogIn = state.uri.path == '/login';
 
       if (authState.isLoading) {
         return null; 
