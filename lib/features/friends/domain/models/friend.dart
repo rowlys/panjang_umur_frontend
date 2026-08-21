@@ -1,59 +1,29 @@
-class Friend {
-  final String id;
-  final String name;
-  final String username;
+import '../../../../core/models/user.dart';
 
-  Friend({
+class FriendRequest {
+  final String id;
+  final User sender;
+  final DateTime createdAt;
+
+  FriendRequest({
     required this.id,
-    required this.name,
-    required this.username,
+    required this.sender,
+    required this.createdAt,
   });
 
-  factory Friend.fromJson(Map<String, dynamic> json) {
-    return Friend(
+  factory FriendRequest.fromJson(Map<String, dynamic> json) {
+    return FriendRequest(
       id: json['id'] as String,
-      name: json['name'] as String,
-      username: json['username'] as String,
+      sender: User.fromJson(json['sender'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'username': username,
-    };
-  }
-}
-
-class UserWithFriendStatus {
-  final String id;
-  final String name;
-  final String username;
-  final int status;
-
-  UserWithFriendStatus({
-    required this.id,
-    required this.name,
-    required this.username,
-    required this.status,
-  });
-
-  factory UserWithFriendStatus.fromJson(Map<String, dynamic> json) {
-    return UserWithFriendStatus(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      username: json['username'] as String,
-      status: json['status'] as int,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'username': username,
-      'status': status,
+      'sender': sender.toJson(),
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }
