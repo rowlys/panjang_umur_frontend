@@ -1,6 +1,8 @@
 import 'package:panjang_umur_frontend/core/network/dio_client.dart';
 import 'package:panjang_umur_frontend/features/auth/domain/models/auth.dart';
 
+import '../../../../core/models/user.dart';
+
 class AuthRemoteDataSource {
   final DioClient _client;
 
@@ -26,7 +28,7 @@ class AuthRemoteDataSource {
   }
 
   Future<User> getMe() async {
-    final response = await _client.get('/auth/me');
+    final response = await _client.get('/users/me');
     
     final user = User.fromJson(response.data as Map<String, dynamic>);
 

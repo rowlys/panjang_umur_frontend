@@ -1,30 +1,4 @@
-class User {
-  final String id;
-  final String? name;
-  final String username;
-
-  User({
-    required this.id,
-    this.name,
-    required this.username,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      name: json['name'] as String?,
-      username: json['username'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'username': username,
-    };
-  }
-}
+import '../../../../core/models/user.dart';
 
 class AuthSession{
   final String token;

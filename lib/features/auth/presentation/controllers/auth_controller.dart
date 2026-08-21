@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/models/auth.dart';
+// import '../../domain/models/auth.dart';
+import '../../../../core/models/user.dart';
 import '../../domain/repositories/auth_repositories.dart';
 import '../../../../core/utils/result.dart';
 

@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/providers/auth_providers.dart';
 
+import '../presentation/widgets/app_shell.dart';
 
 // Screen Imports
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/user/presentation/screens/profile_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
@@ -27,11 +29,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/boot',
     refreshListenable: notifier,
     redirect: (context, state) {
       final authState = ref.read(authControllerProvider);
 
+      final isBoot = state.uri.path == '/boot';
       final isGoingToLogIn = state.uri.path == '/login';
       final isGoingToRegister = state.uri.path == '/register';
 
@@ -45,8 +48,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         return '/login';
       }
 
-      if (isAuthenticated && (isGoingToLogIn || isGoingToRegister)) {
-        return '/';
+      if (isAuthenticated && (isGoingToLogIn || isGoingToRegister || isBoot)) {
+        return '/challenges';
       }
 
       return null;
@@ -60,11 +63,55 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/challenges',
+                builder: (context, state) => const Center(child: Text('Todo: Challenges Screen')),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/my-store',
+                builder: (context, state) => const Center(child: Text('Todo: My Store Screen')),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/friends',
+                builder: (context, state) => const Center(child: Text('Todo: Friends Screen')),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/transactions',
+                builder: (context, state) => const Center(child: Text('Todo: Transactions Screen')),
+              ),
+            ],
+          ),
+        ]
+      ),
       GoRoute(
-        path: '/',
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(title: const Text('Panjang Umur')),
-          body: const Center(child: Text('Home Screen Placeholder')),
+        path: '/profile',
+        builder: (context, state) => const ProfileScreen()
+      ),
+      GoRoute(
+        path: '/boot',
+        builder: (context, state) => const Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(child: CircularProgressIndicator())
         ),
       ),
     ],
