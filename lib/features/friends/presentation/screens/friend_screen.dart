@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
 
+import '../widgets/friend_requests_sheet.dart';
+
 class FriendScreen extends ConsumerWidget {
   const FriendScreen({super.key});
 
@@ -33,7 +35,17 @@ class FriendScreen extends ConsumerWidget {
             ),
             tooltip: 'Friend Requests',
             onPressed: () {
-              // TODO: Navigate to a dedicated requests screen
+              showModalBottomSheet(
+                context: context,
+                useRootNavigator: true,
+                isScrollControlled: true,
+                // backgroundColor: Colors.transparent,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                builder: (context) => const FriendRequestSheet(),
+              );
             },
           ),
           IconButton(
