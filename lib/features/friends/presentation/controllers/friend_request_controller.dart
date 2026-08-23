@@ -2,20 +2,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // import '../../domain/models/auth.dart';
 import '../../domain/models/friend.dart';
-import '../../domain/repositories/friend_repository.dart';
+import '../../domain/repositories/friend_request_repository.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 
 // state = incoming requests, outgoing requests
 class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>> {
-  final FriendRepository _friendRepository;
+  final FriendRequestRepository _friendRequestRepository;
 
-  FriendRequestController(this._friendRepository) : super(const AsyncValue.loading()) {
+  FriendRequestController(this._friendRequestRepository) : super(const AsyncValue.loading()) {
     getFriendRequests();
   }
 
   Future<void> getFriendRequests() async {
     state = const AsyncValue.loading();
-    final result = await _friendRepository.getFriendRequests();
+    final result = await _friendRequestRepository.getFriendRequests();
 
     switch (result) {
       case Success(data: final requests):
@@ -27,7 +27,7 @@ class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFri
 
   Future<void> acceptFriendRequest(String requestId) async {
     state = const AsyncValue.loading();
-    final result = await _friendRepository.acceptFriendRequest(requestId);
+    final result = await _friendRequestRepository.acceptFriendRequest(requestId);
 
     switch (result) {
       case Success(data: _):
@@ -39,7 +39,7 @@ class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFri
 
   Future<void> declineFriendRequest(String requestId) async {
     state = const AsyncValue.loading();
-    final result = await _friendRepository.declineFriendRequest(requestId);
+    final result = await _friendRequestRepository.declineFriendRequest(requestId);
 
     switch (result) {
       case Success(data: _):
@@ -51,7 +51,7 @@ class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFri
 
   Future<void> sendFriendRequest(String userId) async {
     state = const AsyncValue.loading();
-    final result = await _friendRepository.addFriend(userId);
+    final result = await _friendRequestRepository.sendFriendRequest(userId);
 
     switch (result) {
       case Success(data: _):
