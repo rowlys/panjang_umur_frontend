@@ -16,18 +16,18 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Panjang Umur'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            tooltip: 'Profile',
-            onPressed: () {
-              context.push('/profile');
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Panjang Umur'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.account_circle),
+      //       tooltip: 'Profile',
+      //       onPressed: () {
+      //         context.push('/profile');
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
@@ -51,7 +51,12 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history),
-            label: 'Transactions',
+            label: 'History',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),

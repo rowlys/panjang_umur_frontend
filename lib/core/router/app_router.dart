@@ -11,6 +11,8 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/user/presentation/screens/profile_screen.dart';
 
+import '../../features/friends/presentation/screens/friend_screen.dart';
+
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
@@ -89,23 +91,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/friends',
-                builder: (context, state) => const Center(child: Text('Todo: Friends Screen')),
+                builder: (context, state) => const FriendScreen(),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/transactions',
-                builder: (context, state) => const Center(child: Text('Todo: Transactions Screen')),
+                path: '/History',
+                builder: (context, state) => const Center(child: Text('Todo: History Screen')),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),
         ]
-      ),
-      GoRoute(
-        path: '/profile',
-        builder: (context, state) => const ProfileScreen()
       ),
       GoRoute(
         path: '/boot',
