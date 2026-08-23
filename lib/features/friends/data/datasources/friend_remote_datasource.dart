@@ -30,7 +30,7 @@ class FriendRemoteDataSource {
     await _client.delete('/friends/$friendId');
   }
 
-  Future<(List<FriendRequest> incoming, List<FriendRequest> outgoing)> getFriendRequests() async {
+  Future<(List<IncomingFriendRequest> incoming, List<OutgoingFriendRequest> outgoing)> getFriendRequests() async {
     final response = await _client.get('/friends/requests');
 
     final Map<String, dynamic> responseData = response.data as Map<String, dynamic>;
@@ -38,8 +38,8 @@ class FriendRemoteDataSource {
     final List<dynamic> rawIncoming = responseData['incoming'] as List<dynamic>;
     final List<dynamic> rawOutgoing = responseData['outgoing'] as List<dynamic>;
 
-    final List<FriendRequest> incomingRequests = rawIncoming.map((json) => FriendRequest.fromJson(json)).toList();
-    final List<FriendRequest> outgoingRequests = rawOutgoing.map((json) => FriendRequest.fromJson(json)).toList();
+    final List<IncomingFriendRequest> incomingRequests = rawIncoming.map((json) => IncomingFriendRequest.fromJson(json)).toList();
+    final List<OutgoingFriendRequest> outgoingRequests = rawOutgoing.map((json) => OutgoingFriendRequest.fromJson(json)).toList();
 
     return (incomingRequests, outgoingRequests);
   }

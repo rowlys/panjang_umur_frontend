@@ -6,7 +6,7 @@ import '../../domain/repositories/friend_repository.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 
 // state = incoming requests, outgoing requests
-class FriendRequestController extends StateNotifier<AsyncValue<(List<FriendRequest>, List<FriendRequest>)>> {
+class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>> {
   final FriendRepository _friendRepository;
 
   FriendRequestController(this._friendRepository) : super(const AsyncValue.loading()) {

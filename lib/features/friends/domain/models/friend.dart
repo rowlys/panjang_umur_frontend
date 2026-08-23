@@ -1,32 +1,56 @@
 import '../../../../core/models/user.dart';
 
-class FriendRequest {
+class IncomingFriendRequest {
   final String id;
-  final String requesterId;
-  final String addresseeId;
+  final User requester;
   final DateTime createdAt;
 
-  FriendRequest({
+  IncomingFriendRequest({
     required this.id,
-    required this.requesterId,
-    required this.addresseeId,
+    required this.requester,
     required this.createdAt,
   });
 
-  factory FriendRequest.fromJson(Map<String, dynamic> json) {
-    return FriendRequest(
+  factory IncomingFriendRequest.fromJson(Map<String, dynamic> json) {
+    return IncomingFriendRequest(
       id: json['id'] as String,
-      requesterId: json['requesterId'] as String,
-      addresseeId: json['addresseeId'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      requester: User.fromJson(json['requester'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'requesterId': requesterId,
-      'addresseeId': addresseeId,
+      'requester': requester.toJson(),
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+}
+
+class OutgoingFriendRequest {
+  final String id;
+  final User addressee;
+  final DateTime createdAt;
+
+  OutgoingFriendRequest({
+    required this.id,
+    required this.addressee,
+    required this.createdAt,
+  });
+
+  factory OutgoingFriendRequest.fromJson(Map<String, dynamic> json) {
+    return OutgoingFriendRequest(
+      id: json['id'] as String,
+      addressee: User.fromJson(json['addressee'] as Map<String, dynamic>),
+      createdAt: DateTime.parse(json['created_at'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'addressee': addressee.toJson(),
       'createdAt': createdAt.toIso8601String(),
     };
   }

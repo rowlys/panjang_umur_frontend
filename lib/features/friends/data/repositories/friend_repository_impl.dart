@@ -83,7 +83,7 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
-  Future<Result<(List<FriendRequest> incoming, List<FriendRequest> outgoing)>> getFriendRequests() async {
+  Future<Result<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>> getFriendRequests() async {
     try {
       final (incoming, outgoing) = await _remoteDataSource.getFriendRequests();
       return Success((incoming, outgoing));

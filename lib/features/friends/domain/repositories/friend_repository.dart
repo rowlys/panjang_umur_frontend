@@ -9,5 +9,5 @@ abstract class FriendRepository {
   Future<Result<void>> acceptFriendRequest(String requestId);
   Future<Result<void>> declineFriendRequest(String requestId);
   Future<Result<void>> removeFriend(String friendId);
-  Future<Result<(List<FriendRequest> incoming, List<FriendRequest> outgoing)>> getFriendRequests();
+  Future<Result<(List<IncomingFriendRequest> incoming, List<OutgoingFriendRequest> outgoing)>> getFriendRequests();
 }

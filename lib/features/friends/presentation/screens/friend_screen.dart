@@ -47,8 +47,8 @@ class FriendScreen extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.read(friendControllerProvider.notifier).getFriends();
-          ref.read(friendRequestControllerProvider.notifier).getFriendRequests();
+          await ref.read(friendControllerProvider.notifier).getFriends();
+          await ref.read(friendRequestControllerProvider.notifier).getFriendRequests();
         },
         child: CustomScrollView(
           slivers: [

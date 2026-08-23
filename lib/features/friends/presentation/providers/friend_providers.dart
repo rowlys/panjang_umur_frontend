@@ -24,7 +24,7 @@ final friendControllerProvider = StateNotifierProvider<FriendController, AsyncVa
   return FriendController(friendRepository);
 });
 
-final friendRequestControllerProvider = StateNotifierProvider<FriendRequestController, AsyncValue<(List<FriendRequest>, List<FriendRequest>)>>((ref) {
+final friendRequestControllerProvider = StateNotifierProvider<FriendRequestController, AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>>((ref) {
   final friendRepository = ref.watch(friendRepositoryProvider);
   return FriendRequestController(friendRepository);
 });
