@@ -18,12 +18,12 @@ final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepositoryImpl(remoteDataSource);
 });
 
-final userSearchControllerProvider = StateNotifierProvider<UserSearchController, AsyncValue<List<ForeignUser>>>((ref) {
+final userSearchControllerProvider = StateNotifierProvider.autoDispose<UserSearchController, AsyncValue<List<ForeignUser>>>((ref) {
   final userRepository = ref.watch(userRepositoryProvider);
   return UserSearchController(userRepository);
 });
 
-final userProfileProvider = FutureProvider.family<User, String>((ref, userId) async {
+final userProfileControllerProvider = FutureProvider.family<User, String>((ref, userId) async {
   final repository = ref.watch(userRepositoryProvider);
   
   final result = await repository.getUserById(userId);

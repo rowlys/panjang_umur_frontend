@@ -32,12 +32,12 @@ final friendRequestRepositoryProvider = Provider<FriendRequestRepository>((ref) 
   return FriendRequestRepositoryImpl(friendRequestRemoteDataSource);
 });
 
-final friendControllerProvider = StateNotifierProvider<FriendController, AsyncValue<List<User>>>((ref) {
+final friendControllerProvider = StateNotifierProvider.autoDispose<FriendController, AsyncValue<List<User>>>((ref) {
   final friendRepository = ref.watch(friendRepositoryProvider);
   return FriendController(friendRepository);
 });
 
-final friendRequestControllerProvider = StateNotifierProvider<FriendRequestController, AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>>((ref) {
+final friendRequestControllerProvider = StateNotifierProvider.autoDispose<FriendRequestController, AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>>((ref) {
   final friendRequestRepository = ref.watch(friendRequestRepositoryProvider);
   return FriendRequestController(friendRequestRepository);
 });

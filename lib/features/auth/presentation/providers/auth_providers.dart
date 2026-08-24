@@ -24,7 +24,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(remoteDataSource, localDataSource);
 });
 
-final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>((ref) {
+final authControllerProvider = StateNotifierProvider.autoDispose<AuthController, AsyncValue<User?>>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return AuthController(authRepository);
 });

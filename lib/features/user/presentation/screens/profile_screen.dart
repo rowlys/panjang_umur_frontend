@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
 
@@ -17,8 +18,12 @@ class ProfileScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Log Out',
-            onPressed: () {
-              ref.read(authControllerProvider.notifier).logOut();
+            onPressed: () async {
+              await ref.read(authControllerProvider.notifier).logOut();
+
+              if (context.mounted) {
+                context.go('/login'); 
+              }
             },
           ),
         ],
