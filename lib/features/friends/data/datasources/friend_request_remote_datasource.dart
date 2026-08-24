@@ -8,7 +8,7 @@ class FriendRequestRemoteDataSource {
   FriendRequestRemoteDataSource({required this._client});
 
   Future<void> sendFriendRequest(String userId) async {
-    await _client.post('/friends/requests', data: {'userId': userId});
+    await _client.post('/friends/requests', queryParameters: {'userId': userId});
   }
 
   Future<void> acceptFriendRequest(String requestId) async {

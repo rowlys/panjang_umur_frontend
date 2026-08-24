@@ -55,7 +55,6 @@ class DioClient {
       },
       onError: (DioException e, handler) async {
         if (e.response?.statusCode == 401) {
-          clearToken();
           onUnauthorized();
         }
         return handler.next(e);
@@ -115,9 +114,9 @@ class DioClient {
     }
   }
 
-  Future<Response> post(String path, {Object? data}) async {
+  Future<Response> post(String path, {Object? data, Map<String, dynamic>? queryParameters}) async {
     try {
-      return await _dio.post(path, data: data);
+      return await _dio.post(path, data: data, queryParameters: queryParameters);
     } on DioException catch (e) {
       final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
       
