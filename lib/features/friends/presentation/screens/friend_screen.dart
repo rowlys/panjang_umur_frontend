@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
 
@@ -18,7 +19,6 @@ class FriendScreen extends ConsumerWidget {
         title: const Text('Friends'),
         actions: [
           IconButton(
-            // Conditionally show a badge if there are incoming requests
             icon: requestsState.maybeWhen(
               data: (requestsTuple) {
                 final incomingCount = requestsTuple.$1.length;
@@ -30,7 +30,6 @@ class FriendScreen extends ConsumerWidget {
                 }
                 return const Icon(Icons.inbox);
               },
-              // Show the plain icon while loading, on error, or if no data
               orElse: () => const Icon(Icons.inbox),
             ),
             tooltip: 'Friend Requests',
@@ -39,7 +38,6 @@ class FriendScreen extends ConsumerWidget {
                 context: context,
                 useRootNavigator: true,
                 isScrollControlled: true,
-                // backgroundColor: Colors.transparent,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -80,12 +78,17 @@ class FriendScreen extends ConsumerWidget {
                       final friend = friends[index];
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        leading: CircleAvatar(
-                          child: Text(friend.name.substring(0, 1).toUpperCase()), 
+                        leading: GestureDetector(
+                          onTap: () {
+                            context.push('/foreign-profile/${friend.id}');
+                          },
+                          child: CircleAvatar(
+                            child: Text(friend.name.substring(0, 1).toUpperCase()), 
+                          ),
                         ),
                         title: Text(friend.name),
                         onTap: () {
-                          // TODO: Navigate to friend profile
+                          // TODO: Navigate to friend chat room
                         },
 
                         trailing: IconButton(
