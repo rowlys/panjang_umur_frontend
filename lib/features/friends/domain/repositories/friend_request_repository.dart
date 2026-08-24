@@ -1,6 +1,5 @@
 import '../../../../core/utils/result.dart';
 
-import '../../../../core/models/user.dart';
 import '../models/friend.dart';
 
 abstract class FriendRequestRepository {

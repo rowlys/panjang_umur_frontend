@@ -1,8 +1,6 @@
 import 'package:panjang_umur_frontend/core/network/dio_client.dart';
 import 'package:panjang_umur_frontend/core/models/user.dart';
 
-import '../../domain/models/friend.dart';
-
 class FriendRemoteDataSource {
   final DioClient _client;
 

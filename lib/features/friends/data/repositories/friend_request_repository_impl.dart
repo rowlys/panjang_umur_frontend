@@ -2,10 +2,8 @@ import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/core/error/exceptions.dart';
 import 'package:panjang_umur_frontend/core/error/failures.dart';
 
-import 'package:panjang_umur_frontend/core/models/user.dart';
 import '../../domain/models/friend.dart';
 import '../../domain/repositories/friend_request_repository.dart';
-import '../datasources/friend_remote_datasource.dart';
 import '../datasources/friend_request_remote_datasource.dart';
 
 class FriendRequestRepositoryImpl implements FriendRequestRepository {  
