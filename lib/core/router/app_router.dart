@@ -9,8 +9,10 @@ import '../presentation/widgets/app_shell.dart';
 // Screen Imports
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+
 import '../../features/user/presentation/screens/profile_screen.dart';
 import '../../features/user/presentation/screens/foreign_profile_screen.dart';
+import '../../features/user/presentation/screens/user_search_screen.dart';
 
 import '../../features/friends/presentation/screens/friend_screen.dart';
 
@@ -127,7 +129,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final id = state.pathParameters['id']!;
           return ForeignProfileScreen(id: id);
         }
-      )
+      ),
+      GoRoute(
+        path: '/user-search',
+        builder: (context, state) => const UserSearchScreen(),
+      ),
     ],
   );
 

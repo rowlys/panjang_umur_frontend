@@ -50,7 +50,7 @@ class FriendScreen extends ConsumerWidget {
             icon: const Icon(Icons.person_add),
             tooltip: 'Add Friend',
             onPressed: () {
-              // TODO: Implementation for adding a friend
+              context.push('/user-search');
             },
           ),
         ],

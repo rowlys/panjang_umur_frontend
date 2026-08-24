@@ -11,7 +11,7 @@ class ForeignProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userState = ref.watch(userProfileProvider(id));
+    final userState = ref.watch(userProfileControllerProvider(id));
     final friendState = ref.watch(friendControllerProvider);
 
     final bool isFriend = friendState.maybeWhen(
