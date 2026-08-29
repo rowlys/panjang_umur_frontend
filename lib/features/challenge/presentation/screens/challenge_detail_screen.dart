@@ -399,7 +399,16 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
   Future<void> _handleCancel() async {
     setState(() => _isActing = true);
-    await ref.read(createdChallengeControllerProvider.notifier).cancel(widget.challengeId);
+    try {
+      await ref.read(createdChallengeControllerProvider.notifier).cancel(widget.challengeId);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isActing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: $e')),
+      );
+      return;
+    }
     if (!mounted) return;
     setState(() => _isActing = false);
     ref.invalidate(challengeDetailProvider(widget.challengeId));
@@ -407,7 +416,16 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
   Future<void> _handleDelete() async {
     setState(() => _isActing = true);
-    await ref.read(createdChallengeControllerProvider.notifier).delete(widget.challengeId);
+    try {
+      await ref.read(createdChallengeControllerProvider.notifier).delete(widget.challengeId);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isActing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: $e')),
+      );
+      return;
+    }
     if (!mounted) return;
     setState(() => _isActing = false);
     if (mounted) Navigator.of(context).maybePop();
@@ -415,6 +433,10 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
   @override
   Widget build(BuildContext context) {
+    // See _CreateChallengeScreenState's counterpart in create_challenge_screen.dart:
+    // keeps this autoDispose provider alive for as long as this screen is
+    // shown, so Cancel/Delete's post-action refresh doesn't race a disposal.
+    ref.watch(createdChallengeControllerProvider);
     final submissionsState = ref.watch(challengeSubmissionControllerProvider(widget.challengeId));
 
     return Column(

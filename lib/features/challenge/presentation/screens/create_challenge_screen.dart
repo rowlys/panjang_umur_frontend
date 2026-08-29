@@ -39,15 +39,29 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
 
-    final result = await ref.read(createdChallengeControllerProvider.notifier).create(
-          title: _titleController.text.trim(),
-          description: _descriptionController.text.trim(),
-          points: int.parse(_pointsController.text.trim()),
-          type: _type,
-          resetDay: _type == ChallengeType.weekly ? _resetDay : null,
-          assigneeIds: _selectedAssigneeIds.toList(),
-          expiresAt: _expiresAt,
-        );
+    Result<Challenge> result;
+    try {
+      result = await ref.read(createdChallengeControllerProvider.notifier).create(
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim(),
+            points: int.parse(_pointsController.text.trim()),
+            type: _type,
+            resetDay: _type == ChallengeType.weekly ? _resetDay : null,
+            assigneeIds: _selectedAssigneeIds.toList(),
+            expiresAt: _expiresAt,
+          );
+    } catch (e) {
+      // The create request itself may have already succeeded server-side by
+      // the time an error surfaces here (e.g. the post-create refresh inside
+      // the controller failing) — either way, the button must not stay stuck
+      // on loading, so this always resolves the UI state before propagating.
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: $e')),
+      );
+      return;
+    }
 
     if (!mounted) return;
     setState(() => _isSubmitting = false);
@@ -163,6 +177,12 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Keeps the autoDispose provider alive for as long as this screen is on
+    // screen. Without this, if nothing else happens to be watching it (e.g.
+    // the "Created by Me" tab isn't the active one), Riverpod disposes the
+    // controller mid-request and the post-create refresh throws, aborting
+    // _handleCreate before it can reset the submit button's loading state.
+    ref.watch(createdChallengeControllerProvider);
     final friendsState = ref.watch(friendControllerProvider);
 
     return Scaffold(
