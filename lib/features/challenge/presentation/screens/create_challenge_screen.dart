@@ -51,10 +51,6 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
             expiresAt: _expiresAt,
           );
     } catch (e) {
-      // The create request itself may have already succeeded server-side by
-      // the time an error surfaces here (e.g. the post-create refresh inside
-      // the controller failing) — either way, the button must not stay stuck
-      // on loading, so this always resolves the UI state before propagating.
       if (!mounted) return;
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -177,11 +173,6 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Keeps the autoDispose provider alive for as long as this screen is on
-    // screen. Without this, if nothing else happens to be watching it (e.g.
-    // the "Created by Me" tab isn't the active one), Riverpod disposes the
-    // controller mid-request and the post-create refresh throws, aborting
-    // _handleCreate before it can reset the submit button's loading state.
     ref.watch(createdChallengeControllerProvider);
     final friendsState = ref.watch(friendControllerProvider);
 

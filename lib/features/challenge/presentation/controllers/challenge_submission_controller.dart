@@ -8,9 +8,7 @@ import '../../domain/repositories/challenge_submission_repository.dart';
 
 const _submissionsPageSize = 20;
 
-/// One page's worth of a challenge's submissions, plus enough state to
-/// support "load more" pagination and toggling between pending-only and
-/// full-history views without losing what's already been fetched.
+/// One page of a challenge's submissions, with pagination and filter state.
 class SubmissionsPage {
   final List<SubmissionDetail> submissions;
   final bool showAll;
@@ -38,13 +36,7 @@ class SubmissionsPage {
   }
 }
 
-/// Manages the submissions for a single challenge (used by the challenge
-/// creator to review and approve them) plus the submit action performed by
-/// an assignee/friend. Scoped to one challengeId via `.family`.
-///
-/// Submissions are creator-only on the backend, so `loadSubmissions` is NOT
-/// called automatically on construction — only the creator-facing UI should
-/// call it explicitly. Non-creator callers only ever use `submit()`.
+/// Manages submissions for a single challenge, fetched by challengeId.
 class ChallengeSubmissionController extends StateNotifier<AsyncValue<SubmissionsPage>> {
   final ChallengeSubmissionRepository _submissionRepository;
   final String challengeId;
@@ -52,8 +44,6 @@ class ChallengeSubmissionController extends StateNotifier<AsyncValue<Submissions
   ChallengeSubmissionController(this._submissionRepository, this.challengeId)
       : super(const AsyncValue.data(SubmissionsPage(submissions: [], showAll: false, hasMore: false)));
 
-  /// Fetches the first page. Pass [showAll] to switch between pending-only
-  /// (the default — what a creator needs to act on) and full history.
   Future<void> loadSubmissions({bool showAll = false}) async {
     state = const AsyncValue.loading();
     final result = await _submissionRepository.getSubmissionsFor(
@@ -67,11 +57,6 @@ class ChallengeSubmissionController extends StateNotifier<AsyncValue<Submissions
         state = AsyncValue.data(SubmissionsPage(
           submissions: submissions,
           showAll: showAll,
-          // A full page suggests there's likely more; a short page means
-          // we've hit the end. Simple and correct as long as the page size
-          // itself never appears as a coincidental exact total count edge
-          // case that matters (it doesn't here — worst case is one harmless
-          // extra "Load more" tap that returns nothing).
           hasMore: submissions.length == _submissionsPageSize,
         ));
       case Error(failure: final error):
@@ -79,8 +64,6 @@ class ChallengeSubmissionController extends StateNotifier<AsyncValue<Submissions
     }
   }
 
-  /// Fetches the next page using the last-loaded submission's timestamp as
-  /// the cursor, and appends it to what's already shown.
   Future<Result<void>> loadMore() async {
     final page = state.valueOrNull;
     if (page == null || page.isLoadingMore || !page.hasMore || page.submissions.isEmpty) {

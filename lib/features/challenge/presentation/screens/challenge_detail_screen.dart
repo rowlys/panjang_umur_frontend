@@ -147,17 +147,14 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
       maxWidth: 1600,
       imageQuality: 85,
     );
-    if (pickedFile == null) return; // user backed out of the picker — not an error
+    if (pickedFile == null) return;
 
-    // AspectRatio needs width/height up front to lay itself out, but nothing
-    // in Dart exposes an image's dimensions without decoding it first — so we
-    // decode once here, synchronously with the pick, rather than guessing.
     final bytes = await pickedFile.readAsBytes();
     final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
     final aspectRatio = frame.image.width / frame.image.height;
 
-    if (!mounted) return; // widget could be gone by the time decoding finishes
+    if (!mounted) return;
     setState(() {
       _pickedImage = pickedFile;
       _pickedImageAspectRatio = aspectRatio;
@@ -194,11 +191,6 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
     });
   }
 
-  // Set right after a successful submit so the button updates instantly,
-  // without waiting for the challengeDetailProvider refetch to land. Once
-  // fresh server data arrives with a matching status, this becomes redundant;
-  // if the widget's own mySubmissionStatus ever changes, we drop the override
-  // and trust the server value again.
   SubmissionStatus? _optimisticStatus;
 
   @override
@@ -270,8 +262,6 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: _maxPreviewHeight),
             child: AspectRatio(
-              // Matching the box's ratio to the image's own ratio means
-              // BoxFit.cover has nothing to crop — it just scales.
               aspectRatio: _pickedImageAspectRatio ?? 1,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -433,9 +423,6 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
   @override
   Widget build(BuildContext context) {
-    // See _CreateChallengeScreenState's counterpart in create_challenge_screen.dart:
-    // keeps this autoDispose provider alive for as long as this screen is
-    // shown, so Cancel/Delete's post-action refresh doesn't race a disposal.
     ref.watch(createdChallengeControllerProvider);
     final submissionsState = ref.watch(challengeSubmissionControllerProvider(widget.challengeId));
 
@@ -525,9 +512,6 @@ class _SubmissionTile extends StatefulWidget {
 }
 
 class _SubmissionTileState extends State<_SubmissionTile> {
-  // Hidden by default — a photo only downloads once the creator explicitly
-  // asks to see it, so a challenge with a long submission history never
-  // fires off a burst of image requests just because the list rendered.
   bool _showProof = false;
 
   @override
