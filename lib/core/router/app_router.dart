@@ -16,6 +16,10 @@ import '../../features/user/presentation/screens/user_search_screen.dart';
 
 import '../../features/friends/presentation/screens/friend_screen.dart';
 
+import '../../features/challenge/presentation/screens/challenge_screen.dart';
+import '../../features/challenge/presentation/screens/challenge_detail_screen.dart';
+import '../../features/challenge/presentation/screens/create_challenge_screen.dart';
+
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
@@ -78,7 +82,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/challenges',
-                builder: (context, state) => const Center(child: Text('Todo: Challenges Screen')),
+                builder: (context, state) => const ChallengeScreen(),
               ),
             ],
           ),
@@ -133,6 +137,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/user-search',
         builder: (context, state) => const UserSearchScreen(),
+      ),
+      GoRoute(
+        path: '/challenges/new',
+        builder: (context, state) => const CreateChallengeScreen(),
+      ),
+      GoRoute(
+        path: '/challenges/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ChallengeDetailScreen(id: id);
+        },
       ),
     ],
   );

@@ -73,6 +73,21 @@ class AppTheme {
           ),
         ),
       ),
+
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: _lightColorScheme.inverseSurface,
+        contentTextStyle: TextStyle(
+          color: _lightColorScheme.onInverseSurface,
+          fontSize: 14,
+        ),
+        actionTextColor: _lightColorScheme.inversePrimary,
+        behavior: SnackBarBehavior.floating,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
     );
   }
 }
