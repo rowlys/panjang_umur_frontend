@@ -6,7 +6,6 @@ import 'package:panjang_umur_frontend/core/utils/result.dart';
 import '../../domain/models/assigned_challenge.dart';
 import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_detail.dart';
-import '../../domain/models/submission_detail.dart';
 import '../../domain/repositories/challenge_repository.dart';
 import '../../domain/repositories/challenge_submission_repository.dart';
 import '../../data/datasources/challenge_remote_datasource.dart';
@@ -54,7 +53,7 @@ final assignedChallengeControllerProvider = StateNotifierProvider.autoDispose<As
 });
 
 final challengeSubmissionControllerProvider = StateNotifierProvider.autoDispose
-    .family<ChallengeSubmissionController, AsyncValue<List<SubmissionDetail>>, String>((ref, challengeId) {
+    .family<ChallengeSubmissionController, AsyncValue<SubmissionsPage>, String>((ref, challengeId) {
   final submissionRepository = ref.watch(challengeSubmissionRepositoryProvider);
   return ChallengeSubmissionController(submissionRepository, challengeId);
 });

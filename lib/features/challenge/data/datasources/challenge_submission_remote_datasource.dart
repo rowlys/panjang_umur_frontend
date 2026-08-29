@@ -26,8 +26,20 @@ class ChallengeSubmissionRemoteDataSource {
     return data.map((json) => ChallengeSubmission.fromJson(json)).toList();
   }
 
-  Future<List<SubmissionDetail>> getSubmissionsFor(String challengeId) async {
-    final response = await _client.get('/challenges/submissions/$challengeId');
+  Future<List<SubmissionDetail>> getSubmissionsFor(
+    String challengeId, {
+    String? statusFilter,
+    DateTime? before,
+    int? limit,
+  }) async {
+    final response = await _client.get(
+      '/challenges/submissions/$challengeId',
+      queryParameters: {
+        'status': ?statusFilter,
+        'before': ?before?.toUtc().toIso8601String(),
+        'limit': ?limit?.toString(),
+      },
+    );
     final List<dynamic> data = response.data;
     return data.map((json) => SubmissionDetail.fromJson(json)).toList();
   }

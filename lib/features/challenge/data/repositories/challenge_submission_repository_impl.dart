@@ -48,9 +48,19 @@ class ChallengeSubmissionRepositoryImpl implements ChallengeSubmissionRepository
   }
 
   @override
-  Future<Result<List<SubmissionDetail>>> getSubmissionsFor(String challengeId) async {
+  Future<Result<List<SubmissionDetail>>> getSubmissionsFor(
+    String challengeId, {
+    String? statusFilter,
+    DateTime? before,
+    int? limit,
+  }) async {
     try {
-      final submissions = await _challengeSubmissionRemoteDataSource.getSubmissionsFor(challengeId);
+      final submissions = await _challengeSubmissionRemoteDataSource.getSubmissionsFor(
+        challengeId,
+        statusFilter: statusFilter,
+        before: before,
+        limit: limit,
+      );
       return Success(submissions);
     } on NetworkException catch (e) {
       return Error(NetworkFailure(e.message));

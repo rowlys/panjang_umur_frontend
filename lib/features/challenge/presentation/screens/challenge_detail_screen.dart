@@ -380,6 +380,23 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
     }
   }
 
+  Future<void> _handleShowAllChanged(bool showAll) async {
+    await ref
+        .read(challengeSubmissionControllerProvider(widget.challengeId).notifier)
+        .loadSubmissions(showAll: showAll);
+  }
+
+  Future<void> _handleLoadMore() async {
+    final result =
+        await ref.read(challengeSubmissionControllerProvider(widget.challengeId).notifier).loadMore();
+    if (!mounted) return;
+    if (result is Error<void>) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.failure.message)),
+      );
+    }
+  }
+
   Future<void> _handleCancel() async {
     setState(() => _isActing = true);
     await ref.read(createdChallengeControllerProvider.notifier).cancel(widget.challengeId);
@@ -425,16 +442,41 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
         Text('Submissions', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         submissionsState.when(
-          data: (submissions) {
-            if (submissions.isEmpty) {
-              return const Text('No submissions yet.');
-            }
+          data: (page) {
             return Column(
-              children: submissions.map((submission) => _SubmissionTile(
-                submission: submission,
-                isActing: _isActing,
-                onApprove: () => _handleApprove(submission.id),
-              )).toList(),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: false, label: Text('Pending')),
+                    ButtonSegment(value: true, label: Text('All')),
+                  ],
+                  selected: {page.showAll},
+                  onSelectionChanged: (selection) => _handleShowAllChanged(selection.first),
+                ),
+                const SizedBox(height: 8),
+                if (page.submissions.isEmpty)
+                  Text(page.showAll ? 'No submissions yet.' : 'No submissions awaiting approval.')
+                else
+                  ...page.submissions.map((submission) => _SubmissionTile(
+                        submission: submission,
+                        isActing: _isActing,
+                        onApprove: () => _handleApprove(submission.id),
+                      )),
+                if (page.hasMore)
+                  Center(
+                    child: page.isLoadingMore
+                        ? const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : TextButton(onPressed: _handleLoadMore, child: const Text('Load more')),
+                  ),
+              ],
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -445,7 +487,7 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
   }
 }
 
-class _SubmissionTile extends StatelessWidget {
+class _SubmissionTile extends StatefulWidget {
   final SubmissionDetail submission;
   final bool isActing;
   final VoidCallback onApprove;
@@ -457,7 +499,18 @@ class _SubmissionTile extends StatelessWidget {
   });
 
   @override
+  State<_SubmissionTile> createState() => _SubmissionTileState();
+}
+
+class _SubmissionTileState extends State<_SubmissionTile> {
+  // Hidden by default — a photo only downloads once the creator explicitly
+  // asks to see it, so a challenge with a long submission history never
+  // fires off a burst of image requests just because the list rendered.
+  bool _showProof = false;
+
+  @override
   Widget build(BuildContext context) {
+    final submission = widget.submission;
     final isPending = submission.status == SubmissionStatus.submitted;
 
     return Card(
@@ -487,7 +540,7 @@ class _SubmissionTile extends StatelessWidget {
                 ),
                 isPending
                     ? FilledButton(
-                        onPressed: isActing ? null : onApprove,
+                        onPressed: widget.isActing ? null : widget.onApprove,
                         child: const Text('Approve'),
                       )
                     : const Icon(Icons.check_circle, color: Colors.green),
@@ -503,31 +556,44 @@ class _SubmissionTile extends StatelessWidget {
             ),
             if (submission.proofUrl != null) ...[
               const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  submission.proofUrl!,
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return const SizedBox(
-                      height: 200,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
+              if (!_showProof)
+                OutlinedButton.icon(
+                  onPressed: () => setState(() => _showProof = true),
+                  icon: const Icon(Icons.image_outlined, size: 18),
+                  label: const Text('View proof photo'),
+                )
+              else ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    submission.proofUrl!,
                     height: 200,
-                    alignment: Alignment.center,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return const SizedBox(
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 200,
+                      alignment: Alignment.center,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                TextButton.icon(
+                  onPressed: () => setState(() => _showProof = false),
+                  icon: const Icon(Icons.visibility_off_outlined, size: 18),
+                  label: const Text('Hide photo'),
+                ),
+              ],
             ],
           ],
         ),
