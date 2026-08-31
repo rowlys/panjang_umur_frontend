@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../error/exceptions.dart';
 
 String GetApiBaseURL() {
-  if (defaultTargetPlatform == TargetPlatform.android) {
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     return dotenv.env['API_BASE_URL_ANDROID'] ?? '';
   } else {
     return dotenv.env['API_BASE_URL'] ?? '';
