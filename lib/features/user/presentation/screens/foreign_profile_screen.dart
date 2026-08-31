@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../friends/presentation/providers/friend_providers.dart';
@@ -104,9 +105,7 @@ class ForeignProfileScreen extends ConsumerWidget {
                     ],
                     if (isFriend)
                       OutlinedButton.icon(
-                        onPressed: () {
-                          // TODO: Implement navigation to foreign user's shop via go_router
-                        },
+                        onPressed: () => context.push('/shop/$id'),
                         icon: const Icon(Icons.storefront),
                         label: const Text('Visit Shop'),
                       ),

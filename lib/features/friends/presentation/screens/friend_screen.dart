@@ -95,7 +95,7 @@ class FriendScreen extends ConsumerWidget {
                           icon: const Icon(Icons.storefront),
                           tooltip: 'Visit Shop',
                           onPressed: () {
-                            // TODO: Navigate to friend's shop
+                            context.push('/shop/${friend.id}');
                           },
                         ),
                       );
