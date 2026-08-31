@@ -20,6 +20,11 @@ import '../../features/challenge/presentation/screens/challenge_screen.dart';
 import '../../features/challenge/presentation/screens/challenge_detail_screen.dart';
 import '../../features/challenge/presentation/screens/create_challenge_screen.dart';
 
+import '../../features/rewards/presentation/screens/my_store_screen.dart';
+import '../../features/rewards/presentation/screens/create_reward_screen.dart';
+import '../../features/rewards/presentation/screens/friend_shop_screen.dart';
+import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
+
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
@@ -90,7 +95,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/my-store',
-                builder: (context, state) => const Center(child: Text('Todo: My Store Screen')),
+                builder: (context, state) => const MyStoreScreen(),
               ),
             ],
           ),
@@ -147,6 +152,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return ChallengeDetailScreen(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/rewards/new',
+        builder: (context, state) => const CreateRewardScreen(),
+      ),
+      GoRoute(
+        path: '/rewards/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return RewardDetailScreen(id: id);
+        },
+      ),
+      GoRoute(
+        path: '/shop/:giverId',
+        builder: (context, state) {
+          final giverId = state.pathParameters['giverId']!;
+          return FriendShopScreen(giverId: giverId);
         },
       ),
     ],
