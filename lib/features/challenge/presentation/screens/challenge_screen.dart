@@ -6,16 +6,55 @@ import '../../domain/models/challenge.dart';
 import '../providers/challenge_providers.dart';
 import '../widgets/challenge_card.dart';
 
-class ChallengeScreen extends StatelessWidget {
+class ChallengeScreen extends ConsumerStatefulWidget {
   const ChallengeScreen({super.key});
 
   @override
+  ConsumerState<ChallengeScreen> createState() => _ChallengeScreenState();
+}
+
+class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!mounted) return;
+      ref
+          .read(submissionsSubmittedControllerProvider(null).notifier)
+          .loadSubmissions(showAll: false);
+      ref
+          .read(submissionsReceivedControllerProvider(null).notifier)
+          .loadSubmissions(showAll: false);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final pendingTheirs =
+        ref
+            .watch(submissionsReceivedControllerProvider(null))
+            .valueOrNull
+            ?.submissions
+            .length ??
+        0;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Challenges'),
+          actions: [
+            IconButton(
+              tooltip: 'Pending submissions',
+              onPressed: () => context.push('/challenges/pending-submissions'),
+              icon: pendingTheirs > 0
+                  ? Badge(
+                      label: Text('$pendingTheirs'),
+                      child: const Icon(Icons.pending_actions_outlined),
+                    )
+                  : const Icon(Icons.pending_actions_outlined),
+            ),
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Assigned to Me'),

@@ -1,9 +1,15 @@
 import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/features/challenge/domain/models/challenge.dart';
 import 'package:panjang_umur_frontend/features/challenge/domain/models/challenge_submission.dart';
 
-class SubmissionDetail {
+/// A submission made on a challenge I created (I'm the reviewer).
+class SubmissionReceived {
   final String id;
   final String challengeId;
+  final String challengeTitle;
+  final int challengePoints;
+  final ChallengeType challengeType;
+  final ChallengeStatus challengeStatus;
   final String userId;
   final User user;
   final String? proofUrl;
@@ -12,9 +18,13 @@ class SubmissionDetail {
   final DateTime submittedAt;
   final DateTime? approvedAt;
 
-  SubmissionDetail({
+  SubmissionReceived({
     required this.id,
     required this.challengeId,
+    required this.challengeTitle,
+    required this.challengePoints,
+    required this.challengeType,
+    required this.challengeStatus,
     required this.userId,
     required this.user,
     this.proofUrl,
@@ -24,13 +34,19 @@ class SubmissionDetail {
     this.approvedAt,
   });
 
-  factory SubmissionDetail.fromJson(Map<String, dynamic> json) {
-    return SubmissionDetail(
+  factory SubmissionReceived.fromJson(Map<String, dynamic> json) {
+    return SubmissionReceived(
       id: json['id'] as String,
       challengeId: json['challengeId'] as String,
+      challengeTitle: json['challengeTitle'] as String? ?? '',
+      challengePoints: json['challengePoints'] as int? ?? 0,
+      challengeType: parseChallengeType(json['challengeType'] as int? ?? 0),
+      challengeStatus: parseChallengeStatus(
+        json['challengeStatus'] as int? ?? 0,
+      ),
       userId: json['userId'] as String,
       user: User.fromJson(json['user'] as Map<String, dynamic>),
-      proofUrl: json['ProofURL'] as String?,
+      proofUrl: json['proofUrl'] as String?,
       periodStart: DateTime.parse(json['periodStart'] as String),
       status: parseSubmissionStatus(json['status'] as int),
       submittedAt: DateTime.parse(json['submittedAt'] as String),
@@ -38,19 +54,5 @@ class SubmissionDetail {
           ? DateTime.parse(json['approvedAt'] as String)
           : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'challengeId': challengeId,
-      'userId': userId,
-      'user': user.toJson(),
-      'ProofURL': proofUrl,
-      'periodStart': periodStart.toIso8601String(),
-      'status': status.index,
-      'submittedAt': submittedAt.toIso8601String(),
-      'approvedAt': approvedAt?.toIso8601String(),
-    };
   }
 }

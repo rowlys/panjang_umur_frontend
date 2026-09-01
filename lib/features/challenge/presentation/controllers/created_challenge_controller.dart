@@ -58,16 +58,4 @@ class CreatedChallengeController extends StateNotifier<AsyncValue<List<Challenge
         state = AsyncValue.error(error.message, StackTrace.current);
     }
   }
-
-  Future<void> delete(String challengeId) async {
-    state = const AsyncValue.loading();
-    final result = await _challengeRepository.delete(challengeId);
-
-    switch (result) {
-      case Success():
-        await getCreatedByMe();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
-    }
-  }
 }

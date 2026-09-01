@@ -10,7 +10,7 @@ import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_
 
 import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_submission.dart';
-import '../../domain/models/submission_detail.dart';
+import '../../domain/models/submission_received.dart';
 import '../providers/challenge_providers.dart';
 
 class ChallengeDetailScreen extends ConsumerWidget {
@@ -346,14 +346,14 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
     super.initState();
     Future.microtask(() {
       if (!mounted) return;
-      ref.read(challengeSubmissionControllerProvider(widget.challengeId).notifier).loadSubmissions();
+      ref.read(submissionsReceivedControllerProvider(widget.challengeId).notifier).loadSubmissions();
     });
   }
 
   Future<void> _handleApprove(String submissionId) async {
     setState(() => _isActing = true);
     final result = await ref
-        .read(challengeSubmissionControllerProvider(widget.challengeId).notifier)
+        .read(submissionsReceivedControllerProvider(widget.challengeId).notifier)
         .approve(submissionId);
     if (!mounted) return;
     setState(() => _isActing = false);
@@ -372,13 +372,13 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
   Future<void> _handleShowAllChanged(bool showAll) async {
     await ref
-        .read(challengeSubmissionControllerProvider(widget.challengeId).notifier)
+        .read(submissionsReceivedControllerProvider(widget.challengeId).notifier)
         .loadSubmissions(showAll: showAll);
   }
 
   Future<void> _handleLoadMore() async {
     final result =
-        await ref.read(challengeSubmissionControllerProvider(widget.challengeId).notifier).loadMore();
+        await ref.read(submissionsReceivedControllerProvider(widget.challengeId).notifier).loadMore();
     if (!mounted) return;
     if (result is Error<void>) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -404,47 +404,19 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
     ref.invalidate(challengeDetailProvider(widget.challengeId));
   }
 
-  Future<void> _handleDelete() async {
-    setState(() => _isActing = true);
-    try {
-      await ref.read(createdChallengeControllerProvider.notifier).delete(widget.challengeId);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isActing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: $e')),
-      );
-      return;
-    }
-    if (!mounted) return;
-    setState(() => _isActing = false);
-    if (mounted) Navigator.of(context).maybePop();
-  }
-
   @override
   Widget build(BuildContext context) {
     ref.watch(createdChallengeControllerProvider);
-    final submissionsState = ref.watch(challengeSubmissionControllerProvider(widget.challengeId));
+    final submissionsState = ref.watch(submissionsReceivedControllerProvider(widget.challengeId));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.status == ChallengeStatus.active) ...[
-          Row(
-            children: [
-              OutlinedButton.icon(
-                onPressed: _isActing ? null : _handleCancel,
-                icon: const Icon(Icons.cancel_outlined),
-                label: const Text('Cancel'),
-              ),
-              const SizedBox(width: 12),
-              OutlinedButton.icon(
-                onPressed: _isActing ? null : _handleDelete,
-                icon: const Icon(Icons.delete_outline),
-                label: const Text('Delete'),
-                style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              ),
-            ],
+          OutlinedButton.icon(
+            onPressed: _isActing ? null : _handleCancel,
+            icon: const Icon(Icons.cancel_outlined),
+            label: const Text('Cancel'),
           ),
           const SizedBox(height: 16),
         ],
@@ -497,7 +469,7 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 }
 
 class _SubmissionTile extends StatefulWidget {
-  final SubmissionDetail submission;
+  final SubmissionReceived submission;
   final bool isActing;
   final VoidCallback onApprove;
 

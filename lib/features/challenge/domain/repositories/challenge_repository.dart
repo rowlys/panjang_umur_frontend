@@ -19,5 +19,4 @@ abstract class ChallengeRepository {
   });
 
   Future<Result<Challenge>> cancel(String challengeId);
-  Future<Result<void>> delete(String challengeId);
 }

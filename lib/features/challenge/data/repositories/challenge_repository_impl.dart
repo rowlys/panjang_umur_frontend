@@ -98,18 +98,4 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
       return Error(UnexpectedFailure(e.toString()));
     }
   }
-
-  @override
-  Future<Result<void>> delete(String challengeId) async {
-    try {
-      await _challengeRemoteDataSource.delete(challengeId);
-      return Success(null);
-    } on NetworkException catch (e) {
-      return Error(NetworkFailure(e.message));
-    } on ServerException catch (e) {
-      return Error(ServerFailure(e.message));
-    } catch (e) {
-      return Error(UnexpectedFailure(e.toString()));
-    }
-  }
 }

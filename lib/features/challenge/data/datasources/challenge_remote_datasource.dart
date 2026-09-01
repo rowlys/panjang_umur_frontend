@@ -50,8 +50,4 @@ class ChallengeRemoteDataSource {
     final response = await _client.patch('/challenges/$challengeId/cancel');
     return Challenge.fromJson(response.data);
   }
-
-  Future<void> delete(String challengeId) async {
-    await _client.delete('/challenges/$challengeId');
-  }
 }
