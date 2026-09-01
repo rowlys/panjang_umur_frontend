@@ -110,10 +110,66 @@ class RewardRepositoryImpl implements RewardRepository {
   }
 
   @override
-  Future<Result<List<RewardClaim>>> getClaimsForReward(String rewardId, {DateTime? before, int? limit}) async {
+  Future<Result<List<RewardClaim>>> getClaimsGiven({String? rewardId, DateTime? before, int? limit}) async {
     try {
-      final claims = await _rewardRemoteDataSource.getClaimsForReward(rewardId, before: before, limit: limit);
+      final claims = await _rewardRemoteDataSource.getClaimsGiven(rewardId: rewardId, before: before, limit: limit);
       return Success(claims);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<List<RewardClaim>>> getClaimsRedeemed({String? giverId, DateTime? before, int? limit}) async {
+    try {
+      final claims = await _rewardRemoteDataSource.getClaimsRedeemed(giverId: giverId, before: before, limit: limit);
+      return Success(claims);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> fulfillClaim(String claimId) async {
+    try {
+      await _rewardRemoteDataSource.fulfillClaim(claimId);
+      return Success(null);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> requestRefund(String claimId, String reason) async {
+    try {
+      await _rewardRemoteDataSource.requestRefund(claimId, reason);
+      return Success(null);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> approveRefund(String claimId) async {
+    try {
+      await _rewardRemoteDataSource.approveRefund(claimId);
+      return Success(null);
     } on NetworkException catch (e) {
       return Error(NetworkFailure(e.message));
     } on ServerException catch (e) {

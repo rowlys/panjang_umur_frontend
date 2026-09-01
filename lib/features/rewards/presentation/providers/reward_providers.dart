@@ -8,7 +8,8 @@ import '../../data/datasources/reward_remote_datasource.dart';
 import '../../data/repositories/reward_repository_impl.dart';
 import '../controllers/my_shop_controller.dart';
 import '../controllers/friend_shop_controller.dart';
-import '../controllers/reward_claims_controller.dart';
+import '../controllers/reward_claims_given_controller.dart';
+import '../controllers/reward_claims_redeemed_controller.dart';
 
 final rewardRemoteDataSourceProvider = Provider<RewardRemoteDataSource>((ref) {
   final dioClient = ref.watch(dioClientProvider);
@@ -43,8 +44,14 @@ final rewardDetailProvider = FutureProvider.autoDispose.family<Reward, String>((
   }
 });
 
-final rewardClaimsControllerProvider = StateNotifierProvider.autoDispose
-    .family<RewardClaimsController, AsyncValue<RewardClaimsPage>, String>((ref, rewardId) {
+final rewardClaimsGivenControllerProvider = StateNotifierProvider.autoDispose
+    .family<RewardClaimsGivenController, AsyncValue<RewardClaimsGivenPage>, String?>((ref, rewardId) {
   final rewardRepository = ref.watch(rewardRepositoryProvider);
-  return RewardClaimsController(rewardRepository, rewardId);
+  return RewardClaimsGivenController(rewardRepository, rewardId: rewardId);
+});
+
+final rewardClaimsRedeemedControllerProvider = StateNotifierProvider.autoDispose
+    .family<RewardClaimsRedeemedController, AsyncValue<RewardClaimsRedeemedPage>, String?>((ref, giverId) {
+  final rewardRepository = ref.watch(rewardRepositoryProvider);
+  return RewardClaimsRedeemedController(rewardRepository, giverId: giverId);
 });

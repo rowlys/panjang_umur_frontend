@@ -72,6 +72,7 @@ enum ClaimStatus { pending, fulfilled, refundRequested, refunded }
 class RewardClaim {
   final String id;
   final String rewardId;
+  final String rewardTitle;
   final String redeemerId;
   final String giverId;
   final int price;
@@ -79,11 +80,13 @@ class RewardClaim {
   final DateTime redeemedAt;
   final DateTime? fulfilledAt;
   final DateTime? resolvedAt;
-  final String redeemerUsername;
+  final String? redeemerUsername;
+  final String? giverUsername;
 
   RewardClaim({
     required this.id,
     required this.rewardId,
+    required this.rewardTitle,
     required this.redeemerId,
     required this.giverId,
     required this.price,
@@ -91,13 +94,15 @@ class RewardClaim {
     required this.redeemedAt,
     this.fulfilledAt,
     this.resolvedAt,
-    required this.redeemerUsername,
+    this.redeemerUsername,
+    this.giverUsername,
   });
 
   factory RewardClaim.fromJson(Map<String, dynamic> json) {
     return RewardClaim(
       id: json['id'] as String,
       rewardId: json['rewardId'] as String,
+      rewardTitle: json['rewardTitle'] as String? ?? '',
       redeemerId: json['redeemerId'] as String,
       giverId: json['giverId'] as String,
       price: json['price'] as int,
@@ -105,7 +110,8 @@ class RewardClaim {
       redeemedAt: DateTime.parse(json['redeemedAt'] as String),
       fulfilledAt: json['fulfilledAt'] != null ? DateTime.parse(json['fulfilledAt'] as String) : null,
       resolvedAt: json['resolvedAt'] != null ? DateTime.parse(json['resolvedAt'] as String) : null,
-      redeemerUsername: json['redeemerUsername'] as String,
+      redeemerUsername: json['redeemerUsername'] as String?,
+      giverUsername: json['giverUsername'] as String?,
     );
   }
 }

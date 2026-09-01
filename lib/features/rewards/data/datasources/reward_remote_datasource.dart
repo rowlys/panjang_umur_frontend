@@ -56,12 +56,35 @@ class RewardRemoteDataSource {
     return Reward.fromJson(response.data);
   }
 
-  Future<List<RewardClaim>> getClaimsForReward(String rewardId, {DateTime? before, int? limit}) async {
-    final response = await _client.get('/rewards/$rewardId/claims', queryParameters: {
+  Future<List<RewardClaim>> getClaimsGiven({String? rewardId, DateTime? before, int? limit}) async {
+    final response = await _client.get('/rewards/claims/given', queryParameters: {
+      'rewardId': ?rewardId,
       'before': ?before?.toUtc().toIso8601String(),
       'limit': ?limit?.toString(),
     });
     final List<dynamic> data = response.data;
     return data.map((json) => RewardClaim.fromJson(json)).toList();
+  }
+
+  Future<List<RewardClaim>> getClaimsRedeemed({String? giverId, DateTime? before, int? limit}) async {
+    final response = await _client.get('/rewards/claims/redeemed', queryParameters: {
+      'giverId': ?giverId,
+      'before': ?before?.toUtc().toIso8601String(),
+      'limit': ?limit?.toString(),
+    });
+    final List<dynamic> data = response.data;
+    return data.map((json) => RewardClaim.fromJson(json)).toList();
+  }
+
+  Future<void> fulfillClaim(String claimId) async {
+    await _client.patch('/rewards/claims/$claimId/fulfill');
+  }
+
+  Future<void> requestRefund(String claimId, String reason) async {
+    await _client.patch('/rewards/claims/$claimId/refund/request', queryParameters: {'reason': reason});
+  }
+
+  Future<void> approveRefund(String claimId) async {
+    await _client.patch('/rewards/claims/$claimId/refund/approve');
   }
 }

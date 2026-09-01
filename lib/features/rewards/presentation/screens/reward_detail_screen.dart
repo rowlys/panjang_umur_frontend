@@ -176,7 +176,7 @@ class _ClaimsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final claimsState = ref.watch(rewardClaimsControllerProvider(rewardId));
+    final claimsState = ref.watch(rewardClaimsGivenControllerProvider(rewardId));
 
     return claimsState.when(
       data: (page) {
@@ -187,7 +187,7 @@ class _ClaimsSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...page.claims.map((claim) => _ClaimTile(claim: claim)),
+            ...page.claims.map((claim) => _ClaimTile(rewardId: rewardId, claim: claim)),
             if (page.hasMore)
               Center(
                 child: page.isLoadingMore
@@ -200,7 +200,8 @@ class _ClaimsSection extends ConsumerWidget {
                         ),
                       )
                     : TextButton(
-                        onPressed: () => ref.read(rewardClaimsControllerProvider(rewardId).notifier).loadMore(),
+                        onPressed: () =>
+                            ref.read(rewardClaimsGivenControllerProvider(rewardId).notifier).loadMore(),
                         child: const Text('Load more'),
                       ),
               ),
@@ -213,13 +214,21 @@ class _ClaimsSection extends ConsumerWidget {
   }
 }
 
-class _ClaimTile extends StatelessWidget {
+class _ClaimTile extends ConsumerStatefulWidget {
+  final String rewardId;
   final RewardClaim claim;
 
-  const _ClaimTile({required this.claim});
+  const _ClaimTile({required this.rewardId, required this.claim});
+
+  @override
+  ConsumerState<_ClaimTile> createState() => _ClaimTileState();
+}
+
+class _ClaimTileState extends ConsumerState<_ClaimTile> {
+  bool _isActing = false;
 
   String get _statusLabel {
-    switch (claim.status) {
+    switch (widget.claim.status) {
       case ClaimStatus.pending:
         return 'Pending';
       case ClaimStatus.fulfilled:
@@ -233,7 +242,7 @@ class _ClaimTile extends StatelessWidget {
 
   Color _statusColor(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    switch (claim.status) {
+    switch (widget.claim.status) {
       case ClaimStatus.pending:
         return scheme.primary;
       case ClaimStatus.fulfilled:
@@ -245,46 +254,90 @@ class _ClaimTile extends StatelessWidget {
     }
   }
 
+  Future<void> _handleApproveRefund() async {
+    setState(() => _isActing = true);
+    final result = await ref
+        .read(rewardClaimsGivenControllerProvider(widget.rewardId).notifier)
+        .approveRefund(widget.claim.id);
+    if (!mounted) return;
+    setState(() => _isActing = false);
+
+    switch (result) {
+      case Success():
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Refund approved.')),
+        );
+      case Error(failure: final failure):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message)),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final claim = widget.claim;
+    final redeemerUsername = claim.redeemerUsername ?? 'Unknown';
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-              child: Text(
-                claim.redeemerUsername.isNotEmpty ? claim.redeemerUsername[0].toUpperCase() : '?',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('@${claim.redeemerUsername}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(
-                    'Redeemed ${claim.redeemedAt.toLocal().toString().split('.').first}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                  child: Text(
+                    redeemerUsername.isNotEmpty ? redeemerUsername[0].toUpperCase() : '?',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
-            ),
-            Text(
-              _statusLabel,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: _statusColor(context),
-                    fontWeight: FontWeight.w600,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('@$redeemerUsername', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        'Redeemed ${claim.redeemedAt.toLocal().toString().split('.').first}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
                   ),
+                ),
+                Text(
+                  _statusLabel,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: _statusColor(context),
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
             ),
+            if (claim.status == ClaimStatus.refundRequested) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton(
+                  onPressed: _isActing ? null : _handleApproveRefund,
+                  child: _isActing
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Approve Refund'),
+                ),
+              ),
+            ],
           ],
         ),
       ),
