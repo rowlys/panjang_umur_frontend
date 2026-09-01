@@ -132,9 +132,9 @@ class DioClient {
     }
   }
 
-  Future<Response> put(String path, {Object? data}) async {
+  Future<Response> put(String path, {Object? data, Map<String, dynamic>? queryParameters}) async {
     try {
-      return await _dio.put(path, data: data);
+      return await _dio.put(path, data: data, queryParameters: queryParameters);
     } on DioException catch (e) {
       final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
 
@@ -151,9 +151,9 @@ class DioClient {
 
   }
 
-  Future<Response> patch(String path, {Object? data}) async {
+  Future<Response> patch(String path, {Object? data, Map<String, dynamic>? queryParameters}) async {
     try {
-      return await _dio.patch(path, data: data);
+      return await _dio.patch(path, data: data, queryParameters: queryParameters);
     } on DioException catch (e) {
       final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
 
@@ -169,9 +169,9 @@ class DioClient {
     }
   }
 
-  Future<Response> delete(String path, {Object? data}) async {
+  Future<Response> delete(String path, {Object? data, Map<String, dynamic>? queryParameters}) async {
     try {
-      return await _dio.delete(path, data: data);
+      return await _dio.delete(path, data: data, queryParameters: queryParameters);
     } on DioException catch (e) {
       final serverMessage = _extractErrorMessage(e, 'Server error: ${e.message}');
 
