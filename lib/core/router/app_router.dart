@@ -19,11 +19,14 @@ import '../../features/friends/presentation/screens/friend_screen.dart';
 import '../../features/challenge/presentation/screens/challenge_screen.dart';
 import '../../features/challenge/presentation/screens/challenge_detail_screen.dart';
 import '../../features/challenge/presentation/screens/create_challenge_screen.dart';
+import '../../features/challenge/presentation/screens/pending_submissions_screen.dart';
 
 import '../../features/rewards/presentation/screens/my_store_screen.dart';
 import '../../features/rewards/presentation/screens/create_reward_screen.dart';
 import '../../features/rewards/presentation/screens/friend_shop_screen.dart';
 import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
+
+import '../../features/transactions/presentation/screens/history_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
@@ -111,7 +114,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/History',
-                builder: (context, state) => const Center(child: Text('Todo: History Screen')),
+                builder: (context, state) => const HistoryScreen(),
               ),
             ],
           ),
@@ -146,6 +149,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/challenges/new',
         builder: (context, state) => const CreateChallengeScreen(),
+      ),
+      GoRoute(
+        path: '/challenges/pending-submissions',
+        builder: (context, state) => const PendingSubmissionsScreen(),
       ),
       GoRoute(
         path: '/challenges/:id',
