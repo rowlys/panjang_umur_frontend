@@ -1,4 +1,5 @@
 import 'package:panjang_umur_frontend/core/network/dio_client.dart';
+import 'package:panjang_umur_frontend/features/transactions/domain/models/point_balance.dart';
 import 'package:panjang_umur_frontend/features/transactions/domain/models/transaction_entry.dart';
 
 class TransactionRemoteDataSource {
@@ -21,5 +22,11 @@ class TransactionRemoteDataSource {
     );
     final List<dynamic> data = response.data;
     return data.map((json) => TransactionEntry.fromJson(json)).toList();
+  }
+
+  Future<List<PointBalance>> getBalances() async {
+    final response = await _client.get('/transactions/balances');
+    final List<dynamic> data = response.data;
+    return data.map((json) => PointBalance.fromJson(json)).toList();
   }
 }

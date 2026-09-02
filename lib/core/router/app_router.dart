@@ -6,7 +6,6 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 
 import '../presentation/widgets/app_shell.dart';
 
-// Screen Imports
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 
@@ -27,6 +26,7 @@ import '../../features/rewards/presentation/screens/friend_shop_screen.dart';
 import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
 
 import '../../features/transactions/presentation/screens/history_screen.dart';
+import '../../features/transactions/presentation/screens/balances_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
@@ -178,6 +178,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final giverId = state.pathParameters['giverId']!;
           return FriendShopScreen(giverId: giverId);
         },
+      ),
+      GoRoute(
+        path: '/balances',
+        builder: (context, state) => const BalancesScreen(),
       ),
     ],
   );

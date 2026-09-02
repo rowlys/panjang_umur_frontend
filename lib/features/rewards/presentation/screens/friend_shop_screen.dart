@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/user/presentation/providers/user_providers.dart';
 
+import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
+
 import '../../domain/models/reward.dart';
 import '../providers/reward_providers.dart';
+import '../widgets/balance_badge.dart';
 import '../widgets/reward_card.dart';
 
 class FriendShopScreen extends ConsumerStatefulWidget {
@@ -42,6 +45,7 @@ class _FriendShopScreenState extends ConsumerState<FriendShopScreen> {
     switch (result) {
       case Success():
         ref.read(rewardClaimsRedeemedControllerProvider(widget.giverId).notifier).loadClaims();
+        ref.invalidate(balancesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Reward redeemed!')),
         );
@@ -110,6 +114,12 @@ class _FriendShopScreenState extends ConsumerState<FriendShopScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(title),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Center(child: BalanceBadge(giverId: widget.giverId)),
+            ),
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Shop'),

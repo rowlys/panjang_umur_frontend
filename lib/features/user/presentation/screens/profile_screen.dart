@@ -75,11 +75,10 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.settings_rounded),
-                  title: const Text('Settings'),
+                  leading: const Icon(Icons.account_balance_wallet_rounded),
+                  title: const Text('Balances'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () {
-                  },
+                  onTap: () => context.push('/balances'),
                 ),
               ],
             ),
