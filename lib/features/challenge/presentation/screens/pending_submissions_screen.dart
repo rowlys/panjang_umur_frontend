@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
-import '../../domain/models/challenge_submission.dart';
 import '../../domain/models/submission_received.dart';
 import '../../domain/models/submission_submitted.dart';
 import '../providers/challenge_providers.dart';
@@ -225,10 +224,13 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
         .approve(widget.submission.id);
     if (!mounted) return;
     setState(() => _isActing = false);
-    if (result is Error<ChallengeSubmission>) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(result.failure.message)));
+    switch (result) {
+      case Success():
+        ref.invalidate(createdChallengeControllerProvider);
+      case Error(failure: final failure):
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(failure.message)));
     }
   }
 

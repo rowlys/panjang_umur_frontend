@@ -59,8 +59,9 @@ class FriendRequestSheet extends ConsumerWidget {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.check_circle, color: Colors.green),
-                              onPressed: () {
-                                ref.read(friendRequestControllerProvider.notifier).acceptFriendRequest(request.id);
+                              onPressed: () async {
+                                await ref.read(friendRequestControllerProvider.notifier).acceptFriendRequest(request.id);
+                                ref.read(friendControllerProvider.notifier).getFriends();
                               },
                             ),
                             IconButton(

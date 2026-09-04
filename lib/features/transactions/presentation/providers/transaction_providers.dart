@@ -30,7 +30,7 @@ final transactionHistoryControllerProvider =
       return TransactionHistoryController(transactionRepository);
     });
 
-final balancesProvider = FutureProvider<List<PointBalance>>((ref) async {
+final balancesProvider = FutureProvider.autoDispose<List<PointBalance>>((ref) async {
   final repository = ref.watch(transactionRepositoryProvider);
   final result = await repository.getBalances();
 
@@ -42,7 +42,7 @@ final balancesProvider = FutureProvider<List<PointBalance>>((ref) async {
   }
 });
 
-final balanceForGiverProvider = Provider.family<AsyncValue<PointBalance?>, String>((
+final balanceForGiverProvider = Provider.autoDispose.family<AsyncValue<PointBalance?>, String>((
   ref,
   giverId,
 ) {
