@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
+import 'package:panjang_umur_frontend/features/chat/presentation/providers/chat_providers.dart';
+import 'package:panjang_umur_frontend/features/chat/domain/models/conversation_summary.dart';
+import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 
 import '../widgets/friend_requests_sheet.dart';
 
@@ -13,6 +16,12 @@ class FriendScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final friendsState = ref.watch(friendControllerProvider);
     final requestsState = ref.watch(friendRequestControllerProvider);
+    final summaries = ref.watch(conversationSummariesControllerProvider).valueOrNull;
+    final myUserId = ref.watch(authControllerProvider).valueOrNull?.id;
+    final summaryByFriendId = {
+      for (final summary in summaries ?? <ConversationSummary>[])
+        summary.friendId: summary,
+    };
 
     return Scaffold(
       appBar: AppBar(
@@ -59,6 +68,7 @@ class FriendScreen extends ConsumerWidget {
         onRefresh: () async {
           await ref.read(friendControllerProvider.notifier).getFriends();
           await ref.read(friendRequestControllerProvider.notifier).getFriendRequests();
+          await ref.read(conversationSummariesControllerProvider.notifier).refresh();
         },
         child: CustomScrollView(
           slivers: [
@@ -76,19 +86,33 @@ class FriendScreen extends ConsumerWidget {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final friend = friends[index];
+                      final summary = summaryByFriendId[friend.id];
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                         leading: GestureDetector(
                           onTap: () {
                             context.push('/foreign-profile/${friend.id}');
                           },
-                          child: CircleAvatar(
-                            child: Text(friend.name.substring(0, 1).toUpperCase()), 
+                          child: Badge(
+                            isLabelVisible: (summary?.unreadCount ?? 0) > 0,
+                            label: Text('${summary?.unreadCount}'),
+                            child: CircleAvatar(
+                              child: Text(friend.name.substring(0, 1).toUpperCase()),
+                            ),
                           ),
                         ),
                         title: Text(friend.name),
+                        subtitle: summary == null
+                            ? null
+                            : Text(
+                                summary.lastMessage.senderId == myUserId
+                                    ? 'You: ${summary.lastMessage.body}'
+                                    : summary.lastMessage.body,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                         onTap: () {
-                          // TODO: Navigate to friend chat room
+                          context.push('/chat/${friend.id}');
                         },
 
                         trailing: IconButton(

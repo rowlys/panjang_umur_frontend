@@ -28,6 +28,8 @@ import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
 import '../../features/transactions/presentation/screens/history_screen.dart';
 import '../../features/transactions/presentation/screens/balances_screen.dart';
 
+import '../../features/chat/presentation/screens/chat_room_screen.dart';
+
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
 
@@ -182,6 +184,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/balances',
         builder: (context, state) => const BalancesScreen(),
+      ),
+      GoRoute(
+        path: '/chat/:friendId',
+        builder: (context, state) {
+          final friendId = state.pathParameters['friendId']!;
+          return ChatRoomScreen(friendId: friendId);
+        },
       ),
     ],
   );

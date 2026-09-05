@@ -14,6 +14,16 @@ String GetApiBaseURL() {
   }
 }
 
+String GetWsBaseUrl() {
+  final base = GetApiBaseURL();
+  if (base.startsWith('https://')) {
+    return 'wss://${base.substring('https://'.length)}';
+  } else if (base.startsWith('http://')) {
+    return 'ws://${base.substring('http://'.length)}';
+  }
+  return base;
+}
+
 String _extractErrorMessage(DioException e, String fallback) {
     if (e.response?.data != null && e.response?.data is Map<String, dynamic>) {
       final data = e.response!.data as Map<String, dynamic>;

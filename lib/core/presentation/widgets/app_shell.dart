@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../features/challenge/presentation/providers/challenge_providers.dart';
+import '../../../features/chat/presentation/providers/chat_providers.dart';
 import '../../../features/friends/presentation/providers/friend_providers.dart';
 import '../../../features/rewards/presentation/providers/reward_providers.dart';
 import '../../../features/transactions/presentation/providers/transaction_providers.dart';
@@ -27,6 +28,7 @@ class AppShell extends ConsumerWidget {
       case _friendsBranchIndex:
         ref.read(friendControllerProvider.notifier).getFriends();
         ref.read(friendRequestControllerProvider.notifier).getFriendRequests();
+        ref.read(conversationSummariesControllerProvider.notifier).refresh();
       case _historyBranchIndex:
         ref.read(transactionHistoryControllerProvider.notifier).loadHistory();
     }
