@@ -24,15 +24,9 @@ class FriendController extends StateNotifier<AsyncValue<List<User>>> {
     }
   }
 
-  Future<void> removeFriend(String friendId) async {
-    state = const AsyncValue.loading();
+  Future<Result<void>> removeFriend(String friendId) async {
     final result = await _friendRepository.removeFriend(friendId);
-
-    switch (result) {
-      case Success(data: _):
-        await getFriends();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
-    }
+    if (result is Success) await getFriends();
+    return result;
   }
 }

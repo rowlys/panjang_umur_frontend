@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:panjang_umur_frontend/core/utils/result.dart';
+
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../friends/presentation/providers/friend_providers.dart';
 
@@ -9,6 +11,40 @@ class ForeignProfileScreen extends ConsumerWidget {
   final String id;
 
   const ForeignProfileScreen({super.key, required this.id});
+
+  Future<void> _confirmRemoveFriend(BuildContext context, WidgetRef ref, String name) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove Friend'),
+        content: Text(
+          "Remove $name as a friend?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: TextButton.styleFrom(foregroundColor: Theme.of(dialogContext).colorScheme.error),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final result = await ref.read(friendControllerProvider.notifier).removeFriend(id);
+
+    if (!context.mounted) return;
+    if (result case Error(failure: final failure)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(failure.message)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -103,12 +139,20 @@ class ForeignProfileScreen extends ConsumerWidget {
                         ),
                       const SizedBox(width: 16),
                     ],
-                    if (isFriend)
+                    if (isFriend) ...[
                       OutlinedButton.icon(
                         onPressed: () => context.push('/shop/$id'),
                         icon: const Icon(Icons.storefront),
                         label: const Text('Visit Shop'),
                       ),
+                      const SizedBox(width: 16),
+                      OutlinedButton.icon(
+                        onPressed: () => _confirmRemoveFriend(context, ref, user.name),
+                        style: OutlinedButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                        icon: const Icon(Icons.person_remove),
+                        label: const Text('Remove Friend'),
+                      ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 48),
