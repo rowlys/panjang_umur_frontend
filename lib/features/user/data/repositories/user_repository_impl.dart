@@ -40,4 +40,34 @@ class UserRepositoryImpl implements UserRepository {
       return Error(UnexpectedFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Result<User>> updateProfile(String name, String username) async {
+    try {
+      final user = await _remoteDataSource.updateProfile(name, username);
+      return Success(user);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> changePassword(String currentPassword, String newPassword) async {
+    try {
+      await _remoteDataSource.changePassword(currentPassword, newPassword);
+      return Success(null);
+    } on UnauthorizedException catch (e) {
+      return Error(AuthFailure(e.message));
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
 }

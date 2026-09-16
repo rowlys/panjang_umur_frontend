@@ -70,8 +70,7 @@ class ProfileScreen extends ConsumerWidget {
                   leading: const Icon(Icons.edit_rounded),
                   title: const Text('Edit Profile'),
                   trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () {
-                  },
+                  onTap: () => context.push('/profile/edit'),
                 ),
                 const Divider(),
                 ListTile(

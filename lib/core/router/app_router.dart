@@ -12,6 +12,7 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/user/presentation/screens/profile_screen.dart';
 import '../../features/user/presentation/screens/foreign_profile_screen.dart';
 import '../../features/user/presentation/screens/user_search_screen.dart';
+import '../../features/user/presentation/screens/edit_profile_screen.dart';
 
 import '../../features/friends/presentation/screens/friend_screen.dart';
 
@@ -147,6 +148,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/user-search',
         builder: (context, state) => const UserSearchScreen(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: '/challenges/new',
