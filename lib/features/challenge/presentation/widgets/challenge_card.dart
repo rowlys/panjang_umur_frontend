@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/models/user.dart';
 import '../../domain/models/challenge.dart';
 
 class ChallengeCard extends StatelessWidget {
@@ -8,6 +9,7 @@ class ChallengeCard extends StatelessWidget {
   final ChallengeType type;
   final DateTime? expiresAt;
   final String? statusLabel;
+  final List<User> assignees;
   final VoidCallback onTap;
 
   const ChallengeCard({
@@ -19,6 +21,7 @@ class ChallengeCard extends StatelessWidget {
     required this.onTap,
     this.expiresAt,
     this.statusLabel,
+    this.assignees = const [],
   });
 
   String get _typeLabel {
@@ -110,9 +113,67 @@ class ChallengeCard extends StatelessWidget {
                   ],
                 ],
               ),
+              if (assignees.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                _AssigneeAvatars(assignees: assignees),
+              ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _AssigneeAvatars extends StatelessWidget {
+  final List<User> assignees;
+
+  static const int _maxVisible = 4;
+  static const double _avatarRadius = 11;
+  static const double _overlap = 14;
+
+  const _AssigneeAvatars({required this.assignees});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final visible = assignees.take(_maxVisible).toList();
+    final overflow = assignees.length - visible.length;
+    final slotCount = visible.length + (overflow > 0 ? 1 : 0);
+    final width = _avatarRadius * 2 + (slotCount - 1) * _overlap;
+
+    return SizedBox(
+      width: width,
+      height: _avatarRadius * 2,
+      child: Stack(
+        children: [
+          for (var i = 0; i < visible.length; i++)
+            Positioned(
+              left: i * _overlap,
+              child: CircleAvatar(
+                radius: _avatarRadius,
+                backgroundColor: theme.colorScheme.primaryContainer,
+                foregroundColor: theme.colorScheme.onPrimaryContainer,
+                child: Text(
+                  visible[i].name.isNotEmpty ? visible[i].name[0].toUpperCase() : '?',
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          if (overflow > 0)
+            Positioned(
+              left: visible.length * _overlap,
+              child: CircleAvatar(
+                radius: _avatarRadius,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+                child: Text(
+                  '+$overflow',
+                  style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

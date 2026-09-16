@@ -5,6 +5,7 @@ import 'package:panjang_umur_frontend/core/utils/result.dart';
 import '../../domain/models/submission_received.dart';
 import '../../domain/models/submission_submitted.dart';
 import '../providers/challenge_providers.dart';
+import '../widgets/full_screen_photo_viewer.dart';
 
 class PendingSubmissionsScreen extends StatelessWidget {
   const PendingSubmissionsScreen({super.key});
@@ -311,13 +312,16 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
                   label: const Text('View proof photo'),
                 )
               else ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    submission.proofUrl!,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () => showFullScreenPhoto(context, submission.proofUrl!),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      submission.proofUrl!,
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 TextButton.icon(

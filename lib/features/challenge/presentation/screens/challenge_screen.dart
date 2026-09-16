@@ -268,6 +268,7 @@ class _CreatedTabState extends ConsumerState<_CreatedTab> {
                             type: challenge.type,
                             expiresAt: challenge.expiresAt,
                             statusLabel: challenge.status.name,
+                            assignees: challenge.assignees,
                             onTap: () => context.push('/challenges/${challenge.id}'),
                           );
                         },

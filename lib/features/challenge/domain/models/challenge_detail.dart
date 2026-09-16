@@ -16,6 +16,7 @@ class ChallengeDetail {
   final DateTime createdAt;
   final DateTime? expiresAt;
   final SubmissionStatus? mySubmissionStatus;
+  final List<User> assignees;
 
   ChallengeDetail({
     required this.id,
@@ -30,6 +31,7 @@ class ChallengeDetail {
     required this.createdAt,
     this.expiresAt,
     this.mySubmissionStatus,
+    this.assignees = const [],
   });
 
   factory ChallengeDetail.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,10 @@ class ChallengeDetail {
       mySubmissionStatus: json['mySubmissionStatus'] != null
           ? parseSubmissionStatus(json['mySubmissionStatus'] as int)
           : null,
+      assignees: (json['assignees'] as List<dynamic>?)
+              ?.map((a) => User.fromJson(a as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'package:panjang_umur_frontend/core/models/user.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 
@@ -12,6 +13,7 @@ import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_submission.dart';
 import '../../domain/models/submission_received.dart';
 import '../providers/challenge_providers.dart';
+import '../widgets/full_screen_photo_viewer.dart';
 
 class ChallengeDetailScreen extends ConsumerWidget {
   final String id;
@@ -77,6 +79,10 @@ class ChallengeDetailScreen extends ConsumerWidget {
                       Chip(label: Text('Expires ${challenge.expiresAt!.toLocal().toString().split(' ').first}')),
                   ],
                 ),
+                if (isCreator && challenge.assignees.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _AssigneesSection(assignees: challenge.assignees),
+                ],
                 const SizedBox(height: 24),
                 if (isCreator)
                   _CreatorSection(challengeId: id, status: challenge.status)
@@ -111,6 +117,56 @@ class ChallengeDetailScreen extends ConsumerWidget {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     if (resetDay < 0 || resetDay > 6) return 'day $resetDay';
     return days[resetDay];
+  }
+}
+
+class _AssigneesSection extends StatefulWidget {
+  final List<User> assignees;
+
+  const _AssigneesSection({required this.assignees});
+
+  @override
+  State<_AssigneesSection> createState() => _AssigneesSectionState();
+}
+
+class _AssigneesSectionState extends State<_AssigneesSection> {
+  static const int _collapsedLimit = 5;
+
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final assignees = widget.assignees;
+    final isTruncated = !_expanded && assignees.length > _collapsedLimit;
+    final visible = isTruncated ? assignees.take(_collapsedLimit).toList() : assignees;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Assigned to (${assignees.length})',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final user in visible) Chip(label: Text('@${user.username}')),
+            if (isTruncated)
+              ActionChip(
+                label: Text('Show all (${assignees.length})'),
+                onPressed: () => setState(() => _expanded = true),
+              )
+            else if (_expanded && assignees.length > _collapsedLimit)
+              ActionChip(
+                label: const Text('Show less'),
+                onPressed: () => setState(() => _expanded = false),
+              ),
+          ],
+        ),
+      ],
+    );
   }
 }
 
@@ -541,27 +597,30 @@ class _SubmissionTileState extends State<_SubmissionTile> {
                   label: const Text('View proof photo'),
                 )
               else ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    submission.proofUrl!,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const SizedBox(
-                        height: 200,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
+                GestureDetector(
+                  onTap: () => showFullScreenPhoto(context, submission.proofUrl!),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      submission.proofUrl!,
                       height: 200,
-                      alignment: Alignment.center,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        Icons.broken_image_outlined,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        height: 200,
+                        alignment: Alignment.center,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),

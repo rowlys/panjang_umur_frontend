@@ -1,3 +1,5 @@
+import 'package:panjang_umur_frontend/core/models/user.dart';
+
 enum ChallengeType { bounty, daily, weekly }
 enum ChallengeStatus { active, expired, cancelled, completed }
 
@@ -13,6 +15,7 @@ class Challenge {
   final bool restricted;
   final DateTime createdAt;
   final DateTime? expiresAt;
+  final List<User> assignees;
 
   Challenge({
     required this.id,
@@ -26,6 +29,7 @@ class Challenge {
     required this.restricted,
     required this.createdAt,
     this.expiresAt,
+    this.assignees = const [],
   });
 
   factory Challenge.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,10 @@ class Challenge {
       expiresAt: json['expiresAt'] != null
           ? DateTime.parse(json['expiresAt'] as String)
           : null,
+      assignees: (json['assignees'] as List<dynamic>?)
+              ?.map((a) => User.fromJson(a as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
   }
 
