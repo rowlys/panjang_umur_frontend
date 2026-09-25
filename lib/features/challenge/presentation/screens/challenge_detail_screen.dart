@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -194,7 +194,7 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
   static const double _maxPreviewHeight = 640;
 
   final ImagePicker _imagePicker = ImagePicker();
-  XFile? _pickedImage;
+  Uint8List? _pickedImageBytes;
   double? _pickedImageAspectRatio;
 
   Future<void> _pickImage(ImageSource source) async {
@@ -212,7 +212,7 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
 
     if (!mounted) return;
     setState(() {
-      _pickedImage = pickedFile;
+      _pickedImageBytes = bytes;
       _pickedImageAspectRatio = aspectRatio;
     });
   }
@@ -242,7 +242,7 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
 
   void _removePickedImage() {
     setState(() {
-      _pickedImage = null;
+      _pickedImageBytes = null;
       _pickedImageAspectRatio = null;
     });
   }
@@ -260,11 +260,9 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
   Future<void> _handleSubmit() async {
     setState(() => _isSubmitting = true);
 
-    final proofImageBytes = _pickedImage != null ? await _pickedImage!.readAsBytes() : null;
-
     final result = await ref
         .read(challengeSubmissionControllerProvider(widget.challengeId).notifier)
-        .submit(proofImageBytes: proofImageBytes);
+        .submit(proofImageBytes: _pickedImageBytes);
 
     if (!mounted) return;
 
@@ -314,15 +312,15 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_pickedImage != null) ...[
+        if (_pickedImageBytes != null) ...[
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: _maxPreviewHeight),
             child: AspectRatio(
               aspectRatio: _pickedImageAspectRatio ?? 1,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(_pickedImage!.path),
+                child: Image.memory(
+                  _pickedImageBytes!,
                   fit: BoxFit.cover,
                 ),
               ),
