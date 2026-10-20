@@ -21,6 +21,7 @@ class PanjangUmurApp extends ConsumerWidget {
     final router = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Panjang Umur',
       theme: AppTheme.lightTheme, // Inject the theme here
       routerConfig: router,
