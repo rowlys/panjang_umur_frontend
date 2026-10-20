@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/features/transactions/domain/models/transaction_entry.dart';
 import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -181,7 +182,7 @@ class _TransactionTile extends StatelessWidget {
     String amountText;
     switch (entry.sign) {
       case TransactionSign.credit:
-        amountColor = Colors.green;
+        amountColor = AppTheme.success;
         amountText = '+${entry.amount} pts';
       case TransactionSign.debit:
         amountColor = scheme.error;

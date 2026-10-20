@@ -38,13 +38,17 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(userSearchControllerProvider);
+    final barForeground = Theme.of(context).appBarTheme.foregroundColor;
 
     return Scaffold(
       appBar: AppBar(
         title: TextField(
           controller: _searchController,
-          decoration: const InputDecoration(
+          style: TextStyle(color: barForeground),
+          cursorColor: barForeground,
+          decoration: InputDecoration(
             hintText: 'Search users...',
+            hintStyle: TextStyle(color: barForeground?.withValues(alpha: 0.7)),
             border: InputBorder.none,
           ),
           onChanged: _onSearchChanged,

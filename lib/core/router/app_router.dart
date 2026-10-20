@@ -134,7 +134,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/boot',
         builder: (context, state) => const Scaffold(
-          backgroundColor: Colors.white,
           body: Center(child: CircularProgressIndicator())
         ),
       ),

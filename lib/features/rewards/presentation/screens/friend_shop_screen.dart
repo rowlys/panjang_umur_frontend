@@ -5,6 +5,7 @@ import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/user/presentation/providers/user_providers.dart';
 
 import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/reward.dart';
 import '../providers/reward_providers.dart';
@@ -293,9 +294,9 @@ class _MyClaimTileState extends ConsumerState<_MyClaimTile> {
       case ClaimStatus.pending:
         return scheme.primary;
       case ClaimStatus.fulfilled:
-        return Colors.green;
+        return AppTheme.success;
       case ClaimStatus.refundRequested:
-        return Colors.orange;
+        return AppTheme.warning;
       case ClaimStatus.refunded:
         return scheme.error;
     }

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:panjang_umur_frontend/core/models/user.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_submission.dart';
@@ -575,7 +576,7 @@ class _SubmissionTileState extends State<_SubmissionTile> {
                         onPressed: widget.isActing ? null : widget.onApprove,
                         child: const Text('Approve'),
                       )
-                    : const Icon(Icons.check_circle, color: Colors.green),
+                    : const Icon(Icons.check_circle, color: AppTheme.success),
               ],
             ),
             const SizedBox(height: 4),

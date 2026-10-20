@@ -111,7 +111,7 @@ class _CreateChallengeScreenState extends ConsumerState<CreateChallengeScreen> {
                       height: 4,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
+                        color: Theme.of(context).colorScheme.outline,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

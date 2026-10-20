@@ -200,7 +200,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             width: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
                             ),
                           )
                         : const Text(

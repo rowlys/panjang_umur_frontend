@@ -105,7 +105,7 @@ class _CreateRewardScreenState extends ConsumerState<CreateRewardScreen> {
                       height: 4,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
+                        color: Theme.of(context).colorScheme.outline,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

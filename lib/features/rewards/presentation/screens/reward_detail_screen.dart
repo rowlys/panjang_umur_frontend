@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/reward.dart';
 import '../providers/reward_providers.dart';
@@ -246,9 +247,9 @@ class _ClaimTileState extends ConsumerState<_ClaimTile> {
       case ClaimStatus.pending:
         return scheme.primary;
       case ClaimStatus.fulfilled:
-        return Colors.green;
+        return AppTheme.success;
       case ClaimStatus.refundRequested:
-        return Colors.orange;
+        return AppTheme.warning;
       case ClaimStatus.refunded:
         return scheme.error;
     }
