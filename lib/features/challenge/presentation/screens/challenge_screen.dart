@@ -23,6 +23,15 @@ class ChallengeScreen extends ConsumerStatefulWidget {
 }
 
 class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
+  final _pageController = PageController(viewportFraction: 0.86);
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,16 +72,55 @@ class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
           ),
         ],
       ),
-      body: PageView(
-        children: const [
-          _AssignedBoard(),
-          _CreatedBoard(),
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (page) => setState(() => _page = page),
+              children: const [
+                _AssignedBoard(),
+                _CreatedBoard(),
+              ],
+            ),
+          ),
+          _PageDots(count: 2, current: _page),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/challenges/new'),
         icon: const Icon(Icons.add),
         label: const Text('New Challenge'),
+      ),
+    );
+  }
+}
+
+class _PageDots extends StatelessWidget {
+  final int count;
+  final int current;
+
+  const _PageDots({required this.count, required this.current});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (var i = 0; i < count; i++)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: i == current ? 20 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: ChallengeCard.ink.withValues(alpha: i == current ? 1 : 0.3),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+        ],
       ),
     );
   }

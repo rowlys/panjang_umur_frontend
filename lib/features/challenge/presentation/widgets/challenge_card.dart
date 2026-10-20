@@ -60,7 +60,7 @@ class ChallengeCard extends StatelessWidget {
             children: [
               Positioned.fill(child: Image.asset(_asset, fit: BoxFit.fill)),
               Positioned(
-                left: 34 * s,
+                left: 52 * s,
                 top: 33 * s,
                 right: (_artWidth - 312) * s,
                 height: 113 * s,
@@ -70,12 +70,12 @@ class ChallengeCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontFamily: 'PatrickHand', fontSize: 50 * s, color: ink),
+                    style: TextStyle(fontFamily: 'PatrickHand', fontSize: 58 * s, color: ink),
                   ),
                 ),
               ),
               Positioned(
-                left: 34 * s,
+                left: 52 * s,
                 top: 158 * s,
                 right: (_artWidth - 425) * s,
                 bottom: (_artHeight - 336) * s,
@@ -86,14 +86,14 @@ class ChallengeCard extends StatelessWidget {
                       child: LayoutBuilder(
                         builder: (context, box) => Text(
                           description,
-                          maxLines: math.max(1, (box.maxHeight / (34 * s * 1.1)).floor()),
+                          maxLines: math.max(1, (box.maxHeight / (40 * s * 1.1)).floor()),
                           overflow: TextOverflow.ellipsis,
-                          style: hand(34),
+                          style: hand(40),
                         ),
                       ),
                     ),
                     if (footer.isNotEmpty)
-                      Text(footer, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(30)),
+                      Text(footer, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(34)),
                   ],
                 ),
               ),
@@ -111,7 +111,7 @@ class ChallengeCard extends StatelessWidget {
                 height: 72 * s,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(creatorName, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(38)),
+                  child: Text(creatorName, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(44)),
                 ),
               ),
               Positioned(

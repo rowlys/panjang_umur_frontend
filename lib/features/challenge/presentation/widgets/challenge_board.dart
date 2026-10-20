@@ -17,7 +17,7 @@ class ChallengeBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 480),
