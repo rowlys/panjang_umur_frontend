@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 import '../../domain/models/challenge.dart';
 
 class ChallengeCard extends StatelessWidget {
@@ -29,8 +30,6 @@ class ChallengeCard extends StatelessWidget {
   static const double _artWidth = 498;
   static const double _artHeight = 483;
 
-  static const ink = Color(0xFF4E342E);
-
   String get _asset {
     switch (type) {
       case ChallengeType.bounty:
@@ -48,13 +47,14 @@ class ChallengeCard extends StatelessWidget {
       if (expiresAt != null) 'Expires ${expiresAt!.toLocal().toString().split(' ').first}',
       ?statusLabel,
     ].join(' · ');
+    final handDrawn = HandDrawn.of(context);
 
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final s = constraints.maxWidth / _artWidth;
-          TextStyle hand(double size) => TextStyle(fontFamily: 'PatrickHand', fontSize: size * s, color: ink, height: 1.1);
+          TextStyle hand(double size) => handDrawn.hand(size * s).copyWith(height: 1.1);
 
           return Stack(
             children: [
@@ -70,7 +70,7 @@ class ChallengeCard extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontFamily: 'PatrickHand', fontSize: 58 * s, color: ink),
+                    style: handDrawn.hand(58 * s),
                   ),
                 ),
               ),

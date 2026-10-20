@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/challenge.dart';
 import '../providers/challenge_providers.dart';
@@ -72,25 +73,33 @@ class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (page) => setState(() => _page = page),
-              children: const [
-                _AssignedBoard(),
-                _CreatedBoard(),
-              ],
+      body: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (page) => setState(() => _page = page),
+                children: const [
+                  _AssignedBoard(),
+                  _CreatedBoard(),
+                ],
+              ),
             ),
-          ),
-          _PageDots(count: 2, current: _page),
-        ],
+            _PageDots(count: 2, current: _page),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/challenges/new'),
-        icon: const Icon(Icons.add),
-        label: const Text('New Challenge'),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        child: FloatingActionButton.extended(
+          onPressed: () => context.push('/challenges/new'),
+          icon: const Icon(Icons.add),
+          label: const Text('New Challenge'),
+        ),
       ),
     );
   }
@@ -116,7 +125,7 @@ class _PageDots extends StatelessWidget {
               width: i == current ? 20 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: ChallengeCard.ink.withValues(alpha: i == current ? 1 : 0.3),
+                color: HandDrawn.of(context).ink.withValues(alpha: i == current ? 1 : 0.3),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -154,11 +163,14 @@ Widget _filteredBoard({
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 4, 8, 0),
+                  padding: const EdgeInsets.fromLTRB(4, 8, 8, 0),
                   child: BoardSearchField(label: searchLabel, onChanged: onSearchChanged),
                 ),
               ),
-              ChallengeTypeFlags(selected: typeFilter, onChanged: onTypeFilterChanged),
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: ChallengeTypeFlags(selected: typeFilter, onChanged: onTypeFilterChanged),
+              ),
             ],
           ),
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/challenge.dart';
-import 'challenge_card.dart';
 
 class ChallengeTypeFlags extends StatelessWidget {
   final ChallengeType? selected;
@@ -39,20 +39,21 @@ class _Flag extends StatelessWidget {
 
   static const double selectedHeight = 40;
 
-  (Color, IconData, String) get _look {
+  (Color, IconData, String) _look(HandDrawn handDrawn) {
     switch (type) {
       case ChallengeType.bounty:
-        return (const Color(0xFFFFDB5A), Icons.emoji_events_outlined, 'Bounty');
+        return (handDrawn.bountyNote, Icons.emoji_events_outlined, 'Bounty');
       case ChallengeType.daily:
-        return (const Color(0xFFFBA73A), Icons.today_outlined, 'Daily');
+        return (handDrawn.dailyNote, Icons.today_outlined, 'Daily');
       case ChallengeType.weekly:
-        return (const Color(0xFFE5EA7F), Icons.date_range_outlined, 'Weekly');
+        return (handDrawn.weeklyNote, Icons.date_range_outlined, 'Weekly');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final (color, icon, label) = _look;
+    final handDrawn = HandDrawn.of(context);
+    final (color, icon, label) = _look(handDrawn);
 
     return Semantics(
       button: true,
@@ -75,9 +76,9 @@ class _Flag extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(6)),
-                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 2, offset: Offset(1, 2))],
+                boxShadow: handDrawn.dropShadow,
               ),
-              child: Icon(icon, size: 18, color: ChallengeCard.ink),
+              child: Icon(icon, size: 18, color: handDrawn.ink),
             ),
           ),
         ),

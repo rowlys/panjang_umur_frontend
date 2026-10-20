@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'challenge_card.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 class ChallengeBoard extends StatelessWidget {
   final String title;
@@ -10,7 +9,8 @@ class ChallengeBoard extends StatelessWidget {
 
   static const _image = ExactAssetImage('assets/images/challenges/challenge_board.png', scale: 3);
   static const _stretchArea = Rect.fromLTRB(67, 67, 280, 467);
-  static const _corkPadding = EdgeInsets.fromLTRB(18, 57, 18, 18);
+  static const double _corkTop = 160 / 3;
+  static const _corkPadding = EdgeInsets.fromLTRB(18, _corkTop, 18, 18);
   static const double _pinClearance = 68;
   static const double _titleHeight = 39;
 
@@ -35,10 +35,7 @@ class ChallengeBoard extends StatelessWidget {
                   child: Center(
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text(
-                        title,
-                        style: const TextStyle(fontFamily: 'PatrickHand', fontSize: 26, color: ChallengeCard.ink),
-                      ),
+                      child: Text(title, style: HandDrawn.of(context).hand(26)),
                     ),
                   ),
                 ),
