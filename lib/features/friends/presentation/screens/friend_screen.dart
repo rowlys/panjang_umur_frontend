@@ -72,67 +72,70 @@ class FriendScreen extends ConsumerWidget {
         },
         child: CustomScrollView(
           slivers: [
-            friendsState.when(
-              data: (friends) {
-                if (friends.isEmpty) {
-                  return const SliverFillRemaining(
-                    child: Center(
-                      child: Text('No friends to show.'),
-                    ),
-                  );
-                }
+            SliverSafeArea(
+              top: false,
+              sliver: friendsState.when(
+                data: (friends) {
+                  if (friends.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: Center(
+                        child: Text('No friends to show.'),
+                      ),
+                    );
+                  }
 
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final friend = friends[index];
-                      final summary = summaryByFriendId[friend.id];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        leading: GestureDetector(
-                          onTap: () {
-                            context.push('/foreign-profile/${friend.id}');
-                          },
-                          child: Badge(
-                            isLabelVisible: (summary?.unreadCount ?? 0) > 0,
-                            label: Text('${summary?.unreadCount}'),
-                            child: CircleAvatar(
-                              child: Text(friend.name.substring(0, 1).toUpperCase()),
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final friend = friends[index];
+                        final summary = summaryByFriendId[friend.id];
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                          leading: GestureDetector(
+                            onTap: () {
+                              context.push('/foreign-profile/${friend.id}');
+                            },
+                            child: Badge(
+                              isLabelVisible: (summary?.unreadCount ?? 0) > 0,
+                              label: Text('${summary?.unreadCount}'),
+                              child: CircleAvatar(
+                                child: Text(friend.name.substring(0, 1).toUpperCase()),
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(friend.name),
-                        subtitle: summary == null
-                            ? null
-                            : Text(
-                                summary.lastMessage.senderId == myUserId
-                                    ? 'You: ${summary.lastMessage.body}'
-                                    : summary.lastMessage.body,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                        onTap: () {
-                          context.push('/chat/${friend.id}');
-                        },
-
-                        trailing: IconButton(
-                          icon: const Icon(Icons.storefront),
-                          tooltip: 'Visit Shop',
-                          onPressed: () {
-                            context.push('/shop/${friend.id}');
+                          title: Text(friend.name),
+                          subtitle: summary == null
+                              ? null
+                              : Text(
+                                  summary.lastMessage.senderId == myUserId
+                                      ? 'You: ${summary.lastMessage.body}'
+                                      : summary.lastMessage.body,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                          onTap: () {
+                            context.push('/chat/${friend.id}');
                           },
-                        ),
-                      );
-                    },
-                    childCount: friends.length,
-                  ),
-                );
-              },
-              loading: () => const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (error, _) => SliverFillRemaining(
-                child: Center(child: Text('Failed to load friends:\n$error')),
+
+                          trailing: IconButton(
+                            icon: const Icon(Icons.storefront),
+                            tooltip: 'Visit Shop',
+                            onPressed: () {
+                              context.push('/shop/${friend.id}');
+                            },
+                          ),
+                        );
+                      },
+                      childCount: friends.length,
+                    ),
+                  );
+                },
+                loading: () => const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (error, _) => SliverFillRemaining(
+                  child: Center(child: Text('Failed to load friends:\n$error')),
+                ),
               ),
             ),
           ]

@@ -60,7 +60,7 @@ class _MyStoreScreenState extends ConsumerState<MyStoreScreen> {
               ],
             )
           : ListView.builder(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              padding: EdgeInsets.only(top: 8.0, bottom: 8.0 + MediaQuery.paddingOf(context).bottom),
               itemCount: rewards.length,
               itemBuilder: (context, index) {
                 final reward = rewards[index];
@@ -117,10 +117,13 @@ class _MyStoreScreenState extends ConsumerState<MyStoreScreen> {
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => context.push('/rewards/new'),
-          icon: const Icon(Icons.add),
-          label: const Text('New Reward'),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+          child: FloatingActionButton.extended(
+            onPressed: () => context.push('/rewards/new'),
+            icon: const Icon(Icons.add),
+            label: const Text('New Reward'),
+          ),
         ),
       ),
     );

@@ -83,7 +83,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     );
                   }
                   return ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: EdgeInsets.only(top: 8.0, bottom: 8.0 + MediaQuery.paddingOf(context).bottom),
                     itemCount: page.entries.length + (page.hasMore ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index >= page.entries.length) {
