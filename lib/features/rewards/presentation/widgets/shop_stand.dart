@@ -42,7 +42,7 @@ class _ShopStandState extends State<ShopStand> with SingleTickerProviderStateMix
     rect: Rect.fromLTWH(310, 470, 185, 252),
   );
 
-  late final _wave = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400));
+  late final _wave = AnimationController(vsync: this, duration: const Duration(milliseconds: 3600));
   bool _visible = false;
 
   @override
