@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:panjang_umur_frontend/core/models/user.dart';
-import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/page_dots.dart';
 
 import '../../domain/models/challenge.dart';
 import '../providers/challenge_providers.dart';
@@ -89,7 +89,10 @@ class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
                 ],
               ),
             ),
-            _PageDots(count: 2, current: _page),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: PageDots(count: 2, current: _page),
+            ),
           ],
         ),
       ),
@@ -100,36 +103,6 @@ class _ChallengeScreenState extends ConsumerState<ChallengeScreen> {
           icon: const Icon(Icons.add),
           label: const Text('New Challenge'),
         ),
-      ),
-    );
-  }
-}
-
-class _PageDots extends StatelessWidget {
-  final int count;
-  final int current;
-
-  const _PageDots({required this.count, required this.current});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (var i = 0; i < count; i++)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: i == current ? 20 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: HandDrawn.of(context).ink.withValues(alpha: i == current ? 1 : 0.3),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-        ],
       ),
     );
   }
