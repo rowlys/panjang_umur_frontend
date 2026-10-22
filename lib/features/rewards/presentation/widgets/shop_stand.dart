@@ -72,55 +72,60 @@ class _ShopStandState extends State<ShopStand> with SingleTickerProviderStateMix
     final shopkeeper = widget.shopkeeper;
     final (body, hand) = shopkeeper == Gender.female ? (_femaleBody, _femaleHand) : (_maleBody, _maleHand);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final scale = _imageWidth / constraints.maxWidth;
-        Widget at(_Layer layer, Widget child) => Positioned.fromRect(
-              rect: Rect.fromLTRB(
-                layer.rect.left / scale,
-                layer.rect.top / scale,
-                layer.rect.right / scale,
-                layer.rect.bottom / scale,
-              ),
-              child: child,
-            );
-        Widget image(_Layer layer) => Image.asset(layer.asset, fit: BoxFit.fill);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final scale = _imageWidth / constraints.maxWidth;
+            Widget at(_Layer layer, Widget child) => Positioned.fromRect(
+                  rect: Rect.fromLTRB(
+                    layer.rect.left / scale,
+                    layer.rect.top / scale,
+                    layer.rect.right / scale,
+                    layer.rect.bottom / scale,
+                  ),
+                  child: child,
+                );
+            Widget image(_Layer layer) => Image.asset(layer.asset, fit: BoxFit.fill);
 
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            at(_background, image(_background)),
-            if (shopkeeper != null) at(body, GestureDetector(onTap: _waveAgain, child: image(body))),
-            IgnorePointer(
-              child: FittedBox(
-                fit: BoxFit.fill,
-                child: SizedBox(
-                  width: _imageWidth,
-                  height: constraints.maxHeight * scale,
-                  child: Image.asset(_asset, centerSlice: _stretchArea, fit: BoxFit.fill),
-                ),
-              ),
-            ),
-            if (shopkeeper != null)
-              at(
-                hand,
-                GestureDetector(
-                  onTap: _waveAgain,
-                  child: AnimatedBuilder(
-                    animation: _wave,
-                    builder: (context, child) => Transform.rotate(
-                      angle: 0.35 * math.sin(_wave.value * 12 * math.pi) * (1 - _wave.value * _wave.value),
-                      alignment: Alignment.bottomCenter,
-                      child: child,
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                at(_background, image(_background)),
+                if (shopkeeper != null) at(body, GestureDetector(onTap: _waveAgain, child: image(body))),
+                IgnorePointer(
+                  child: FittedBox(
+                    fit: BoxFit.fill,
+                    child: SizedBox(
+                      width: _imageWidth,
+                      height: constraints.maxHeight * scale,
+                      child: Image.asset(_asset, centerSlice: _stretchArea, fit: BoxFit.fill),
                     ),
-                    child: image(hand),
                   ),
                 ),
-              ),
-            Padding(padding: _counterPanel / scale, child: widget.child),
-          ],
-        );
-      },
+                if (shopkeeper != null)
+                  at(
+                    hand,
+                    GestureDetector(
+                      onTap: _waveAgain,
+                      child: AnimatedBuilder(
+                        animation: _wave,
+                        builder: (context, child) => Transform.rotate(
+                          angle: 0.35 * math.sin(_wave.value * 12 * math.pi) * (1 - _wave.value * _wave.value),
+                          alignment: Alignment.bottomCenter,
+                          child: child,
+                        ),
+                        child: image(hand),
+                      ),
+                    ),
+                  ),
+                Padding(padding: _counterPanel / scale, child: widget.child),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
