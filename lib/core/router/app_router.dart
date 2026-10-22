@@ -24,6 +24,7 @@ import '../../features/challenge/presentation/screens/pending_submissions_screen
 import '../../features/rewards/presentation/screens/my_store_screen.dart';
 import '../../features/rewards/presentation/screens/create_reward_screen.dart';
 import '../../features/rewards/presentation/screens/friend_shop_screen.dart';
+import '../../features/rewards/presentation/screens/my_claims_screen.dart';
 import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
 
 import '../../features/transactions/presentation/screens/history_screen.dart';
@@ -134,7 +135,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/boot',
         builder: (context, state) => const Scaffold(
-          backgroundColor: Colors.white,
           body: Center(child: CircularProgressIndicator())
         ),
       ),
@@ -184,6 +184,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final giverId = state.pathParameters['giverId']!;
           return FriendShopScreen(giverId: giverId);
+        },
+      ),
+      GoRoute(
+        path: '/shop/:giverId/claims',
+        builder: (context, state) {
+          final giverId = state.pathParameters['giverId']!;
+          return MyClaimsScreen(giverId: giverId);
         },
       ),
       GoRoute(

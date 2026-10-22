@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 import '../../domain/models/reward.dart';
 import '../providers/reward_providers.dart';
@@ -51,6 +52,10 @@ class RewardDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 _StockEditor(rewardId: id, currentStock: reward.stock),
+                if (reward.isAvailable && reward.stock > 0) ...[
+                  const SizedBox(height: 16),
+                  _CancelButton(rewardId: id),
+                ],
                 const SizedBox(height: 24),
                 Text('Claims', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
@@ -169,6 +174,66 @@ class _StockEditorState extends ConsumerState<_StockEditor> {
   }
 }
 
+class _CancelButton extends ConsumerStatefulWidget {
+  final String rewardId;
+
+  const _CancelButton({required this.rewardId});
+
+  @override
+  ConsumerState<_CancelButton> createState() => _CancelButtonState();
+}
+
+class _CancelButtonState extends ConsumerState<_CancelButton> {
+  bool _isCanceling = false;
+
+  Future<void> _handleCancel() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancel reward?'),
+        content: const Text('This sets stock to 0 so the reward is no longer available for friends to redeem. You can restock it later from its detail page.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Back')),
+          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Cancel reward')),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    setState(() => _isCanceling = true);
+    final result = await ref.read(myShopControllerProvider.notifier).updateStock(widget.rewardId, 0);
+    if (!mounted) return;
+    setState(() => _isCanceling = false);
+    ref.invalidate(rewardDetailProvider(widget.rewardId));
+
+    switch (result) {
+      case Success():
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reward cancelled.')),
+        );
+      case Error(failure: final failure):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message)),
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: _isCanceling ? null : _handleCancel,
+      icon: _isCanceling
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.cancel_outlined),
+      label: const Text('Cancel Reward'),
+    );
+  }
+}
+
 class _ClaimsSection extends ConsumerWidget {
   final String rewardId;
 
@@ -246,9 +311,9 @@ class _ClaimTileState extends ConsumerState<_ClaimTile> {
       case ClaimStatus.pending:
         return scheme.primary;
       case ClaimStatus.fulfilled:
-        return Colors.green;
+        return AppTheme.success;
       case ClaimStatus.refundRequested:
-        return Colors.orange;
+        return AppTheme.warning;
       case ClaimStatus.refunded:
         return scheme.error;
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 class FriendRequestSheet extends ConsumerWidget {
   const FriendRequestSheet({super.key});
@@ -23,7 +24,7 @@ class FriendRequestSheet extends ConsumerWidget {
               height: 4,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.grey.shade400,
+                color: Theme.of(context).colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -58,14 +59,14 @@ class FriendRequestSheet extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.check_circle, color: Colors.green),
+                              icon: const Icon(Icons.check_circle, color: AppTheme.success),
                               onPressed: () async {
                                 await ref.read(friendRequestControllerProvider.notifier).acceptFriendRequest(request.id);
                                 ref.read(friendControllerProvider.notifier).getFriends();
                               },
                             ),
                             IconButton(
-                              icon: const Icon(Icons.cancel, color: Colors.red),
+                              icon: Icon(Icons.cancel, color: Theme.of(context).colorScheme.error),
                               onPressed: () {
                                 ref.read(friendRequestControllerProvider.notifier).declineFriendRequest(request.id);
                               },

@@ -34,9 +34,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<String>> register(String name, String username, String password) async {
+  Future<Result<String>> register(String name, String username, String password, Gender gender) async {
     try {
-      final userID = await _remoteDataSource.register(name, username, password);
+      final userID = await _remoteDataSource.register(name, username, password, gender);
 
       return Success(userID);
     } on NetworkException catch (e) {

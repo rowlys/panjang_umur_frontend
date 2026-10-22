@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 import '../../domain/models/submission_received.dart';
 import '../../domain/models/submission_submitted.dart';
 import '../providers/challenge_providers.dart';
@@ -132,7 +133,7 @@ class _SubmittedTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.hourglass_top, color: Colors.orange),
+            const Icon(Icons.hourglass_top, color: AppTheme.warning),
           ],
         ),
       ),

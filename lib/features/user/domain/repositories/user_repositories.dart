@@ -4,6 +4,6 @@ import '../../../../core/models/user.dart';
 abstract class UserRepository {
   Future<Result<User>> getUserById(String userId);
   Future<Result<List<ForeignUser>>> searchUsers(String query);
-  Future<Result<User>> updateProfile(String name, String username);
+  Future<Result<User>> updateProfile(String name, String username, Gender? gender);
   Future<Result<void>> changePassword(String currentPassword, String newPassword);
 }

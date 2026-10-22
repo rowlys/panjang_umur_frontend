@@ -42,9 +42,9 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Result<User>> updateProfile(String name, String username) async {
+  Future<Result<User>> updateProfile(String name, String username, Gender? gender) async {
     try {
-      final user = await _remoteDataSource.updateProfile(name, username);
+      final user = await _remoteDataSource.updateProfile(name, username, gender);
       return Success(user);
     } on NetworkException catch (e) {
       return Error(NetworkFailure(e.message));

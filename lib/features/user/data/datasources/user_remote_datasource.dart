@@ -23,10 +23,11 @@ class UserRemoteDataSource {
     return usersJson.map((json) => ForeignUser.fromJson(json as Map<String, dynamic>)).toList();
   }
 
-  Future<User> updateProfile(String name, String username) async {
+  Future<User> updateProfile(String name, String username, Gender? gender) async {
     final response = await _client.patch('/users/me', data: {
       'name': name,
       'username': username,
+      'gender': ?gender?.index,
     });
 
     return User.fromJson(response.data as Map<String, dynamic>);

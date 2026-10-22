@@ -1,5 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import '../../../../core/models/user.dart';
+import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 import '../../domain/models/challenge.dart';
 
 class ChallengeCard extends StatelessWidget {
@@ -9,7 +11,7 @@ class ChallengeCard extends StatelessWidget {
   final ChallengeType type;
   final DateTime? expiresAt;
   final String? statusLabel;
-  final List<User> assignees;
+  final String creatorName;
   final VoidCallback onTap;
 
   const ChallengeCard({
@@ -18,162 +20,113 @@ class ChallengeCard extends StatelessWidget {
     required this.description,
     required this.points,
     required this.type,
+    required this.creatorName,
     required this.onTap,
     this.expiresAt,
     this.statusLabel,
-    this.assignees = const [],
   });
 
-  String get _typeLabel {
-    switch (type) {
-      case ChallengeType.bounty:
-        return 'Bounty';
-      case ChallengeType.daily:
-        return 'Daily';
-      case ChallengeType.weekly:
-        return 'Weekly';
-    }
-  }
+  static const double aspectRatio = _artWidth / _artHeight;
+  static const double _artWidth = 498;
+  static const double _artHeight = 483;
 
-  IconData get _typeIcon {
+  String get _asset {
     switch (type) {
       case ChallengeType.bounty:
-        return Icons.emoji_events_outlined;
+        return 'assets/images/challenges/bounty_note.png';
       case ChallengeType.daily:
-        return Icons.today_outlined;
+        return 'assets/images/challenges/daily_note.png';
       case ChallengeType.weekly:
-        return Icons.date_range_outlined;
+        return 'assets/images/challenges/weekly_note.png';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final footer = [
+      if (expiresAt != null) 'Expires ${expiresAt!.toLocal().toString().split(' ').first}',
+      ?statusLabel,
+    ].join(' · ');
+    final handDrawn = HandDrawn.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return AspectRatio(
+      aspectRatio: aspectRatio,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final s = constraints.maxWidth / _artWidth;
+          TextStyle hand(double size) => handDrawn.hand(size * s).copyWith(height: 1.1);
+
+          return Stack(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Chip(
-                    label: Text('$points pts'),
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                  ),
-                ],
-              ),
-              if (description.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+              Positioned.fill(child: Image.asset(_asset, fit: BoxFit.fill)),
+              Positioned(
+                left: 52 * s,
+                top: 33 * s,
+                right: (_artWidth - 312) * s,
+                height: 113 * s,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: handDrawn.hand(58 * s),
                   ),
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(_typeIcon, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 4),
-                  Text(_typeLabel, style: theme.textTheme.labelMedium),
-                  if (expiresAt != null) ...[
-                    const SizedBox(width: 12),
-                    Icon(Icons.schedule, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Expires ${expiresAt!.toLocal().toString().split(' ').first}',
-                      style: theme.textTheme.labelMedium,
-                    ),
-                  ],
-                  if (statusLabel != null) ...[
-                    const Spacer(),
-                    Text(
-                      statusLabel!,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
+              ),
+              Positioned(
+                left: 52 * s,
+                top: 158 * s,
+                right: (_artWidth - 425) * s,
+                bottom: (_artHeight - 336) * s,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, box) => Text(
+                          description,
+                          maxLines: math.max(1, (box.maxHeight / (40 * s * 1.1)).floor()),
+                          overflow: TextOverflow.ellipsis,
+                          style: hand(40),
+                        ),
                       ),
                     ),
+                    if (footer.isNotEmpty)
+                      Text(footer, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(34)),
                   ],
-                ],
+                ),
               ),
-              if (assignees.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                _AssigneeAvatars(assignees: assignees),
-              ],
+              Positioned(
+                left: 340 * s,
+                top: 62 * s,
+                width: 66 * s,
+                height: 58 * s,
+                child: FittedBox(child: Text('$points', style: hand(40).copyWith(fontWeight: FontWeight.bold))),
+              ),
+              Positioned(
+                left: 125 * s,
+                top: 344 * s,
+                right: (_artWidth - 425) * s,
+                height: 72 * s,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(creatorName, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(44)),
+                ),
+              ),
+              Positioned(
+                left: 20 * s,
+                top: 24 * s,
+                right: (_artWidth - 439) * s,
+                bottom: (_artHeight - 421) * s,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(onTap: onTap),
+                ),
+              ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AssigneeAvatars extends StatelessWidget {
-  final List<User> assignees;
-
-  static const int _maxVisible = 4;
-  static const double _avatarRadius = 11;
-  static const double _overlap = 14;
-
-  const _AssigneeAvatars({required this.assignees});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final visible = assignees.take(_maxVisible).toList();
-    final overflow = assignees.length - visible.length;
-    final slotCount = visible.length + (overflow > 0 ? 1 : 0);
-    final width = _avatarRadius * 2 + (slotCount - 1) * _overlap;
-
-    return SizedBox(
-      width: width,
-      height: _avatarRadius * 2,
-      child: Stack(
-        children: [
-          for (var i = 0; i < visible.length; i++)
-            Positioned(
-              left: i * _overlap,
-              child: CircleAvatar(
-                radius: _avatarRadius,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                foregroundColor: theme.colorScheme.onPrimaryContainer,
-                child: Text(
-                  visible[i].name.isNotEmpty ? visible[i].name[0].toUpperCase() : '?',
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          if (overflow > 0)
-            Positioned(
-              left: visible.length * _overlap,
-              child: CircleAvatar(
-                radius: _avatarRadius,
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                foregroundColor: theme.colorScheme.onSurfaceVariant,
-                child: Text(
-                  '+$overflow',
-                  style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-        ],
+          );
+        },
       ),
     );
   }

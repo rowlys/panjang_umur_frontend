@@ -148,7 +148,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text('Log In', style: TextStyle(fontSize: 16)),
