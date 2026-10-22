@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/gender_field.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 
@@ -25,6 +27,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   bool _isSavingProfile = false;
   bool _isSavingPassword = false;
+  Gender? _gender;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final user = ref.read(authControllerProvider).valueOrNull;
     _nameController = TextEditingController(text: user?.name ?? '');
     _usernameController = TextEditingController(text: user?.username ?? '');
+    if (user != null && user.gender != Gender.unspecified) _gender = user.gender;
   }
 
   @override
@@ -52,6 +56,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final result = await ref.read(userRepositoryProvider).updateProfile(
           _nameController.text.trim(),
           _usernameController.text.trim(),
+          _gender,
         );
 
     if (result case Success()) {
@@ -125,6 +130,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   controller: _usernameController,
                   decoration: const InputDecoration(labelText: 'Username'),
                   validator: (value) => (value == null || value.trim().isEmpty) ? 'Username is required' : null,
+                ),
+                const SizedBox(height: 16),
+                GenderField(
+                  initialValue: _gender,
+                  onChanged: (value) => _gender = value,
                 ),
                 const SizedBox(height: 16),
                 FilledButton(

@@ -17,11 +17,12 @@ class AuthRemoteDataSource {
     return AuthSession.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<String> register(String name, String username, String password) async {
+  Future<String> register(String name, String username, String password, Gender gender) async {
     final response = await _client.post('/auth/register', data: {
       'name': name,
       'username': username,
       'password': password,
+      'gender': gender.index,
     });
 
     return response.data['userId'] as String;

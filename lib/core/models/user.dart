@@ -1,12 +1,16 @@
+enum Gender { unspecified, male, female }
+
 class User {
   final String id;
   final String name;
   final String username;
+  final Gender gender;
 
   User({
     required this.id,
     required this.name,
     required this.username,
+    this.gender = Gender.unspecified,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -14,6 +18,7 @@ class User {
       id: json['id'] as String,
       name: json['name'] as String,
       username: json['username'] as String,
+      gender: Gender.values.elementAtOrNull(json['gender'] as int? ?? 0) ?? Gender.unspecified,
     );
   }
 
@@ -22,6 +27,7 @@ class User {
       'id': id,
       'name': name,
       'username': username,
+      'gender': gender.index,
     };
   }
 }

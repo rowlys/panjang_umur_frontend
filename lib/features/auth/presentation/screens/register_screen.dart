@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/gender_field.dart';
+
 import '../providers/auth_providers.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -20,6 +23,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   
   bool _isPasswordHidden = true;
   bool _isConfirmPasswordHidden = true;
+  Gender? _gender;
 
   @override
   void dispose() {
@@ -38,6 +42,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         _nameController.text,
         _usernameController.text,
         _passwordController.text,
+        _gender!,
       );
     }
   }
@@ -125,6 +130,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     validator: (value) => value == null || value.isEmpty ? 'Enter a username' : null,
                     enabled: !authState.isLoading,
                     textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 16),
+
+                  GenderField(
+                    validator: (value) => value == null ? 'Choose your gender' : null,
+                    enabled: !authState.isLoading,
+                    onChanged: (value) => _gender = value,
                   ),
                   const SizedBox(height: 16),
 
