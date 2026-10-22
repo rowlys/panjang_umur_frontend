@@ -69,6 +69,13 @@ flutter:
     - assets/images/challenges/bounty_note.png
     - assets/images/challenges/daily_note.png
     - assets/images/challenges/weekly_note.png
+    - assets/images/rewards/shop_background.png
+    - assets/images/rewards/shop_stand.png
+    - assets/images/rewards/item_box.png
+    - assets/images/rewards/male_body.png
+    - assets/images/rewards/male_hand.png
+    - assets/images/rewards/female_body.png
+    - assets/images/rewards/female_hand.png
   fonts:
     - family: PatrickHand
       fonts:
