@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
+import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
 
 import '../../domain/models/reward.dart';
 import '../providers/reward_providers.dart';
@@ -329,6 +330,7 @@ class _ClaimTileState extends ConsumerState<_ClaimTile> {
 
     switch (result) {
       case Success():
+        ref.invalidate(givenBalancesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Refund approved.')),
         );

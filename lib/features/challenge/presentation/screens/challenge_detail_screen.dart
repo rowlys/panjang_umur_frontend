@@ -9,6 +9,7 @@ import 'package:panjang_umur_frontend/core/models/user.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
+import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
 
 import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_submission.dart';
@@ -415,6 +416,7 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
 
     switch (result) {
       case Success():
+        ref.invalidate(givenBalancesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Submission approved!')),
         );

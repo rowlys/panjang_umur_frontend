@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
+import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
 import '../../domain/models/submission_received.dart';
 import '../../domain/models/submission_submitted.dart';
 import '../providers/challenge_providers.dart';
@@ -229,6 +230,7 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
     switch (result) {
       case Success():
         ref.invalidate(createdChallengeControllerProvider);
+        ref.invalidate(givenBalancesProvider);
       case Error(failure: final failure):
         ScaffoldMessenger.of(
           context,
