@@ -29,6 +29,7 @@ import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
 
 import '../../features/transactions/presentation/screens/history_screen.dart';
 import '../../features/transactions/presentation/screens/balances_screen.dart';
+import '../../features/transactions/presentation/screens/given_balances_screen.dart';
 
 import '../../features/chat/presentation/screens/chat_room_screen.dart';
 
@@ -196,6 +197,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/balances',
         builder: (context, state) => const BalancesScreen(),
+      ),
+      GoRoute(
+        path: '/balances/given',
+        builder: (context, state) => const GivenBalancesScreen(),
       ),
       GoRoute(
         path: '/chat/:friendId',

@@ -31,7 +31,16 @@ class MyStoreScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Store')),
+      appBar: AppBar(
+        title: const Text('My Store'),
+        actions: [
+          IconButton(
+            onPressed: () => context.push('/balances/given'),
+            icon: const Icon(Icons.people_outline),
+            tooltip: 'Who holds my points',
+          ),
+        ],
+      ),
       body: ShopStand(
         shopkeeper: ref.watch(authControllerProvider).valueOrNull?.gender,
         child: state.when(
