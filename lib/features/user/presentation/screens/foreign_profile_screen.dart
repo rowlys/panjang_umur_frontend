@@ -6,6 +6,7 @@ import 'package:panjang_umur_frontend/core/utils/result.dart';
 
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../friends/presentation/providers/friend_providers.dart';
+import '../../../transactions/presentation/providers/transaction_providers.dart';
 
 class ForeignProfileScreen extends ConsumerWidget {
   final String id;
@@ -109,8 +110,9 @@ class ForeignProfileScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
+                if (isFriend) _PointsSummary(friendId: id),
                 const SizedBox(height: 32),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -162,6 +164,34 @@ class ForeignProfileScreen extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error loading profile: $error')),
+      ),
+    );
+  }
+}
+
+class _PointsSummary extends ConsumerWidget {
+  final String friendId;
+
+  const _PointsSummary({required this.friendId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final held = ref.watch(balanceForGiverProvider(friendId));
+    final given = ref.watch(givenBalanceForOwnerProvider(friendId));
+
+    if (!held.hasValue || !given.hasValue) return const SizedBox.shrink();
+
+    final heldPoints = held.value?.balance ?? 0;
+    final givenPoints = given.value?.balance ?? 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Text(
+        'You hold $heldPoints of their pts  ·  They hold $givenPoints of yours',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     );
   }
