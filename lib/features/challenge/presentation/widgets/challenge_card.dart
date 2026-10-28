@@ -26,9 +26,12 @@ class ChallengeCard extends StatelessWidget {
     this.statusLabel,
   });
 
-  static const double aspectRatio = _artWidth / _artHeight;
-  static const double _artWidth = 498;
-  static const double _artHeight = 483;
+  static const double aspectRatio = _cellWidth / _cellHeight;
+  static const double _cellWidth = 498;
+  static const double _cellHeight = 483;
+  static const double _artWidth = 421;
+  static const double _artHeight = 397;
+  static const double _noteScale = 1.0;
 
   String get _asset {
     switch (type) {
@@ -53,78 +56,80 @@ class ChallengeCard extends StatelessWidget {
       aspectRatio: aspectRatio,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final s = constraints.maxWidth / _artWidth;
+          final s = _noteScale * constraints.maxWidth / _cellWidth;
           TextStyle hand(double size) => handDrawn.hand(size * s).copyWith(height: 1.1);
 
-          return Stack(
-            children: [
-              Positioned.fill(child: Image.asset(_asset, fit: BoxFit.fill)),
-              Positioned(
-                left: 52 * s,
-                top: 33 * s,
-                right: (_artWidth - 312) * s,
-                height: 113 * s,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: handDrawn.hand(58 * s),
-                  ),
-                ),
+          return Center(
+            child: Container(
+              width: _artWidth * s,
+              height: _artHeight * s,
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(color: handDrawn.shadow, blurRadius: 25 * s, offset: Offset(25 * s, 30 * s))],
               ),
-              Positioned(
-                left: 52 * s,
-                top: 158 * s,
-                right: (_artWidth - 425) * s,
-                bottom: (_artHeight - 336) * s,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, box) => Text(
-                          description,
-                          maxLines: math.max(1, (box.maxHeight / (40 * s * 1.1)).floor()),
-                          overflow: TextOverflow.ellipsis,
-                          style: hand(40),
-                        ),
-                      ),
+              child: Stack(
+                children: [
+                  Positioned.fill(child: Image.asset(_asset, fit: BoxFit.fill)),
+                  Positioned(
+                    left: 32 * s,
+                    top: 9 * s,
+                    right: (_artWidth - 292) * s,
+                    height: 113 * s,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: handDrawn.hand(58 * s)),
                     ),
-                    if (footer.isNotEmpty)
-                      Text(footer, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(34)),
-                  ],
-                ),
+                  ),
+                  Positioned(
+                    left: 32 * s,
+                    top: 134 * s,
+                    right: (_artWidth - 405) * s,
+                    bottom: (_artHeight - 312) * s,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, box) => Text(
+                              description,
+                              maxLines: math.max(1, (box.maxHeight / (40 * s * 1.1)).floor()),
+                              overflow: TextOverflow.ellipsis,
+                              style: hand(40),
+                            ),
+                          ),
+                        ),
+                        if (footer.isNotEmpty)
+                          Text(footer, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(34)),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    left: 320 * s,
+                    top: 38 * s,
+                    width: 66 * s,
+                    height: 58 * s,
+                    child: FittedBox(
+                      child: Text('$points', style: hand(40).copyWith(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  Positioned(
+                    left: 105 * s,
+                    top: 320 * s,
+                    right: (_artWidth - 405) * s,
+                    height: 72 * s,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(creatorName, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(44)),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(onTap: onTap),
+                    ),
+                  ),
+                ],
               ),
-              Positioned(
-                left: 340 * s,
-                top: 62 * s,
-                width: 66 * s,
-                height: 58 * s,
-                child: FittedBox(child: Text('$points', style: hand(40).copyWith(fontWeight: FontWeight.bold))),
-              ),
-              Positioned(
-                left: 125 * s,
-                top: 344 * s,
-                right: (_artWidth - 425) * s,
-                height: 72 * s,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(creatorName, maxLines: 1, overflow: TextOverflow.ellipsis, style: hand(44)),
-                ),
-              ),
-              Positioned(
-                left: 20 * s,
-                top: 24 * s,
-                right: (_artWidth - 439) * s,
-                bottom: (_artHeight - 421) * s,
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(onTap: onTap),
-                ),
-              ),
-            ],
+            ),
           );
         },
       ),
