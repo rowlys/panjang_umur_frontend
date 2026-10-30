@@ -59,12 +59,14 @@ class ForeignProfileScreen extends ConsumerWidget {
 
     final friendRequestState = ref.watch(friendRequestControllerProvider);
 
-    final bool requestReceived = friendRequestState.maybeWhen(
+    final incomingRequest = friendRequestState.maybeWhen(
       data: (requestsTuple) {
-        final incomingRequests = requestsTuple.$1;
-        return incomingRequests.any((request) => request.requester.id == id);
+        for (final request in requestsTuple.$1) {
+          if (request.requester.id == id) return request;
+        }
+        return null;
       },
-      orElse: () => false,
+      orElse: () => null,
     );
 
     final bool requestSent = friendRequestState.maybeWhen(
@@ -117,10 +119,14 @@ class ForeignProfileScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (!isFriend) ...[
-                      if (requestReceived)
+                      if (incomingRequest != null)
                         FilledButton.icon(
-                          onPressed: () {
-                            ref.read(friendRequestControllerProvider.notifier).acceptFriendRequest(id);
+                          onPressed: () async {
+                            await ref
+                                .read(friendRequestControllerProvider.notifier)
+                                .acceptFriendRequest(incomingRequest.id);
+                            if (!context.mounted) return;
+                            ref.read(friendControllerProvider.notifier).getFriends();
                           },
                           icon: const Icon(Icons.check),
                           label: const Text('Accept Request'),
