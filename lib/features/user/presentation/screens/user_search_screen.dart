@@ -97,7 +97,7 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
     return ListTile(
       leading: GestureDetector(
         onTap: () {
-          context.push('/profile/${user.id}');
+          context.push('/foreign-profile/${user.id}');
         },
         child: CircleAvatar(
           child: Text(initial),
