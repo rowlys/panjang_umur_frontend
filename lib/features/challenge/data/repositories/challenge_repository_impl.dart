@@ -86,6 +86,32 @@ class ChallengeRepositoryImpl implements ChallengeRepository {
   }
 
   @override
+  Future<Result<Challenge>> update(
+    String challengeId, {
+    String? title,
+    String? description,
+    int? points,
+    DateTime? expiresAt,
+  }) async {
+    try {
+      final challenge = await _challengeRemoteDataSource.update(
+        challengeId,
+        title: title,
+        description: description,
+        points: points,
+        expiresAt: expiresAt,
+      );
+      return Success(challenge);
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } catch (e) {
+      return Error(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<Challenge>> cancel(String challengeId) async {
     try {
       final challenge = await _challengeRemoteDataSource.cancel(challengeId);

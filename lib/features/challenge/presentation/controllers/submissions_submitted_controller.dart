@@ -40,23 +40,17 @@ class SubmissionsSubmittedController
   final String? challengeId;
 
   SubmissionsSubmittedController(this._submissionRepository, {this.challengeId})
-    : super(
-        const AsyncValue.data(
-          SubmissionsSubmittedPage(
-            submissions: [],
-            showAll: true,
-            hasMore: false,
-          ),
-        ),
-      );
+    : super(const AsyncValue.loading());
 
   Future<void> loadSubmissions({bool showAll = true}) async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<SubmissionsSubmittedPage>.loading().copyWithPrevious(state);
     final result = await _submissionRepository.getSubmissionsSubmitted(
       challengeId: challengeId,
       statusFilter: showAll ? null : 'submitted',
       limit: _submissionsPageSize,
     );
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final submissions):
@@ -89,6 +83,8 @@ class SubmissionsSubmittedController
       before: page.submissions.last.submittedAt,
       limit: _submissionsPageSize,
     );
+
+    if (!mounted) return Success(null);
 
     switch (result) {
       case Success(data: final more):

@@ -11,8 +11,10 @@ class AssignedChallengeController extends StateNotifier<AsyncValue<List<Assigned
   }
 
   Future<void> getAssignedToMe() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<AssignedChallenge>>.loading().copyWithPrevious(state);
     final result = await _challengeRepository.getAssignedToMe();
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final challenges):
@@ -20,5 +22,13 @@ class AssignedChallengeController extends StateNotifier<AsyncValue<List<Assigned
       case Error(failure: final error):
         state = AsyncValue.error(error.message, StackTrace.current);
     }
+  }
+
+  /// Drops a challenge from the list right after its submission is accepted,
+  /// without refetching the board.
+  void markSubmitted(String challengeId) {
+    final current = state.valueOrNull;
+    if (current == null) return;
+    state = AsyncValue.data(current.where((challenge) => challenge.id != challengeId).toList());
   }
 }

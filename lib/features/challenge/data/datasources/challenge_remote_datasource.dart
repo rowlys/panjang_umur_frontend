@@ -46,6 +46,22 @@ class ChallengeRemoteDataSource {
     return Challenge.fromJson(response.data);
   }
 
+  Future<Challenge> update(
+    String challengeId, {
+    String? title,
+    String? description,
+    int? points,
+    DateTime? expiresAt,
+  }) async {
+    final response = await _client.patch('/challenges/$challengeId', data: {
+      'title': ?title,
+      'description': ?description,
+      'points': ?points,
+      if (expiresAt != null) 'expiresAt': expiresAt.toUtc().toIso8601String(),
+    });
+    return Challenge.fromJson(response.data);
+  }
+
   Future<Challenge> cancel(String challengeId) async {
     final response = await _client.patch('/challenges/$challengeId/cancel');
     return Challenge.fromJson(response.data);

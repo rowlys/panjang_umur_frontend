@@ -11,8 +11,10 @@ class CreatedChallengeController extends StateNotifier<AsyncValue<List<Challenge
   }
 
   Future<void> getCreatedByMe() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<Challenge>>.loading().copyWithPrevious(state);
     final result = await _challengeRepository.getCreatedByMe();
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final challenges):
@@ -42,20 +44,56 @@ class CreatedChallengeController extends StateNotifier<AsyncValue<List<Challenge
     );
 
     if (result is Success<Challenge>) {
-      await getCreatedByMe();
+      _upsert(result.data);
     }
     return result;
   }
 
-  Future<void> cancel(String challengeId) async {
-    state = const AsyncValue.loading();
+  Future<Result<Challenge>> update(
+    String challengeId, {
+    String? title,
+    String? description,
+    int? points,
+    DateTime? expiresAt,
+  }) async {
+    final result = await _challengeRepository.update(
+      challengeId,
+      title: title,
+      description: description,
+      points: points,
+      expiresAt: expiresAt,
+    );
+
+    if (result is Success<Challenge>) {
+      _upsert(result.data);
+    }
+    return result;
+  }
+
+  Future<Result<Challenge>> cancel(String challengeId) async {
     final result = await _challengeRepository.cancel(challengeId);
 
-    switch (result) {
-      case Success():
-        await getCreatedByMe();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
+    if (result is Success<Challenge>) {
+      _upsert(result.data);
     }
+    return result;
+  }
+
+  /// Replaces the challenge in place, or adds it when it is new, so the board
+  /// updates without a reload.
+  void _upsert(Challenge challenge) {
+    if (!mounted) return;
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final index = current.indexWhere((entry) => entry.id == challenge.id);
+    if (index == -1) {
+      state = AsyncValue.data([challenge, ...current]);
+      return;
+    }
+
+    final next = [...current];
+    next[index] = challenge;
+    state = AsyncValue.data(next);
   }
 }

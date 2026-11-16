@@ -229,7 +229,6 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
     setState(() => _isActing = false);
     switch (result) {
       case Success():
-        ref.invalidate(createdChallengeControllerProvider);
         ref.invalidate(givenBalancesProvider);
       case Error(failure: final failure):
         ScaffoldMessenger.of(

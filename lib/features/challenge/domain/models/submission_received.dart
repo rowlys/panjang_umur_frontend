@@ -55,4 +55,22 @@ class SubmissionReceived {
           : null,
     );
   }
+
+  SubmissionReceived copyWith({SubmissionStatus? status, DateTime? approvedAt}) {
+    return SubmissionReceived(
+      id: id,
+      challengeId: challengeId,
+      challengeTitle: challengeTitle,
+      challengePoints: challengePoints,
+      challengeType: challengeType,
+      challengeStatus: challengeStatus,
+      userId: userId,
+      user: user,
+      proofUrl: proofUrl,
+      periodStart: periodStart,
+      status: status ?? this.status,
+      submittedAt: submittedAt,
+      approvedAt: approvedAt ?? this.approvedAt,
+    );
+  }
 }

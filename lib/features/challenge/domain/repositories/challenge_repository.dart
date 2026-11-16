@@ -18,5 +18,13 @@ abstract class ChallengeRepository {
     DateTime? expiresAt,
   });
 
+  Future<Result<Challenge>> update(
+    String challengeId, {
+    String? title,
+    String? description,
+    int? points,
+    DateTime? expiresAt,
+  });
+
   Future<Result<Challenge>> cancel(String challengeId);
 }

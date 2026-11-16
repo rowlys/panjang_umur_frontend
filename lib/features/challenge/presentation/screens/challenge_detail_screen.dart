@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:panjang_umur_frontend/core/models/user.dart';
@@ -260,7 +261,12 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
   }
 
   Future<void> _handleSubmit() async {
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      // Show the accepted state right away; put the form back if the server
+      // refuses, keeping the picked photo so it can be retried.
+      _optimisticStatus = SubmissionStatus.submitted;
+    });
 
     final result = await ref
         .read(challengeSubmissionControllerProvider(widget.challengeId).notifier)
@@ -270,17 +276,16 @@ class _AssigneeSectionState extends ConsumerState<_AssigneeSection> {
 
     switch (result) {
       case Success():
-        setState(() {
-          _isSubmitting = false;
-          _optimisticStatus = SubmissionStatus.submitted;
-        });
-        ref.invalidate(challengeDetailProvider(widget.challengeId));
-        ref.read(assignedChallengeControllerProvider.notifier).getAssignedToMe();
+        setState(() => _isSubmitting = false);
+        ref.read(assignedChallengeControllerProvider.notifier).markSubmitted(widget.challengeId);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Submitted for approval!')),
         );
       case Error(failure: final failure):
-        setState(() => _isSubmitting = false);
+        setState(() {
+          _isSubmitting = false;
+          _optimisticStatus = null;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(failure.message)),
         );
@@ -395,7 +400,8 @@ class _CreatorSection extends ConsumerStatefulWidget {
 }
 
 class _CreatorSectionState extends ConsumerState<_CreatorSection> {
-  bool _isActing = false;
+  final Set<String> _approving = {};
+  bool _isCancelling = false;
 
   @override
   void initState() {
@@ -407,15 +413,18 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
   }
 
   Future<void> _handleApprove(String submissionId) async {
-    setState(() => _isActing = true);
+    setState(() => _approving.add(submissionId));
     final result = await ref
         .read(submissionsReceivedControllerProvider(widget.challengeId).notifier)
         .approve(submissionId);
     if (!mounted) return;
-    setState(() => _isActing = false);
+    setState(() => _approving.remove(submissionId));
 
     switch (result) {
       case Success():
+        ref
+            .read(submissionsReceivedControllerProvider(null).notifier)
+            .markApprovedLocally(submissionId);
         ref.invalidate(givenBalancesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Submission approved!')),
@@ -445,19 +454,27 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
   }
 
   Future<void> _handleCancel() async {
-    setState(() => _isActing = true);
-    try {
-      await ref.read(createdChallengeControllerProvider.notifier).cancel(widget.challengeId);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isActing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: $e')),
-      );
-      return;
-    }
+    setState(() => _isCancelling = true);
+    final result = await ref.read(createdChallengeControllerProvider.notifier).cancel(widget.challengeId);
     if (!mounted) return;
-    setState(() => _isActing = false);
+    setState(() => _isCancelling = false);
+
+    switch (result) {
+      case Success():
+        ref.invalidate(challengeDetailProvider(widget.challengeId));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Challenge cancelled.')),
+        );
+      case Error(failure: final failure):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message)),
+        );
+    }
+  }
+
+  Future<void> _handleEdit() async {
+    await context.push('/challenges/${widget.challengeId}/edit');
+    if (!mounted) return;
     ref.invalidate(challengeDetailProvider(widget.challengeId));
   }
 
@@ -470,10 +487,24 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.status == ChallengeStatus.active) ...[
-          OutlinedButton.icon(
-            onPressed: _isActing ? null : _handleCancel,
-            icon: const Icon(Icons.cancel_outlined),
-            label: const Text('Cancel'),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isCancelling ? null : _handleEdit,
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Edit'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isCancelling ? null : _handleCancel,
+                  icon: const Icon(Icons.cancel_outlined),
+                  label: const Text('Cancel'),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
         ],
@@ -498,7 +529,7 @@ class _CreatorSectionState extends ConsumerState<_CreatorSection> {
                 else
                   ...page.submissions.map((submission) => _SubmissionTile(
                         submission: submission,
-                        isActing: _isActing,
+                        isActing: _approving.contains(submission.id),
                         onApprove: () => _handleApprove(submission.id),
                       )),
                 if (page.hasMore)
