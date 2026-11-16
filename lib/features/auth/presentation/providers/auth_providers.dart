@@ -26,5 +26,11 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 
 final authControllerProvider = StateNotifierProvider.autoDispose<AuthController, AsyncValue<User?>>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  return AuthController(authRepository);
+  final dioClient = ref.watch(dioClientProvider);
+  final controller = AuthController(authRepository);
+
+  // A 401 on any request means the stored token is no longer accepted.
+  dioClient.onUnauthorized = controller.handleSessionExpired;
+
+  return controller;
 });

@@ -57,6 +57,10 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final user = await _remoteDataSource.getMe();
       return Success(user);
+    } on UnauthorizedException {
+      // The stored token is no longer valid. That is the same as being logged
+      // out, so the app can show the login screen without an error banner.
+      return Success(null);
     } on NetworkException catch (e) {
       return Error(NetworkFailure(e.message));
     } on ServerException catch (e) {
@@ -74,16 +78,6 @@ class AuthRepositoryImpl implements AuthRepository {
       return Error(UnexpectedFailure(e.toString()));
     }
     return Success(null);
-  }
-
-  @override
-  Future<Result<bool>> isLoggedIn() async {
-    try {
-      final token = await _localDataSource.getToken();
-      return Success(token != null);
-    } catch (e) {
-      return Error(UnexpectedFailure(e.toString()));
-    }
   }
 
 

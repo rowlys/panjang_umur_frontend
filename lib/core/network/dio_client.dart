@@ -42,7 +42,9 @@ class DioClient {
   final Dio _dio;
   final FlutterSecureStorage _storage;
 
-  final VoidCallback onUnauthorized;
+  /// Called when a request with a stored token is rejected with 401, so the
+  /// app can drop the session instead of showing errors on every screen.
+  VoidCallback onUnauthorized;
 
   String? _cachedToken;
   bool _isTokenLoaded = false;
@@ -64,7 +66,7 @@ class DioClient {
         return handler.next(options);
       },
       onError: (DioException e, handler) async {
-        if (e.response?.statusCode == 401) {
+        if (e.response?.statusCode == 401 && _cachedToken != null) {
           onUnauthorized();
         }
         return handler.next(e);

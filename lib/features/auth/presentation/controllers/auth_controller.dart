@@ -48,6 +48,14 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
+  /// Drops the session when the server rejects our token. The router sends the
+  /// user back to the login screen as soon as the state becomes null.
+  Future<void> handleSessionExpired() async {
+    if (!mounted) return;
+    state = const AsyncValue.data(null);
+    await _authRepository.logOut();
+  }
+
   Future<void> register(String name, String username, String password, Gender gender) async {
     state = const AsyncValue.loading();
     final result = await _authRepository.register(name, username, password, gender);
