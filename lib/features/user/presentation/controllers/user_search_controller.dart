@@ -15,8 +15,10 @@ class UserSearchController extends StateNotifier<AsyncValue<List<ForeignUser>>> 
       return;
     }
 
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<ForeignUser>>.loading().copyWithPrevious(state);
     final result = await _userRepository.searchUsers(query);
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final users):

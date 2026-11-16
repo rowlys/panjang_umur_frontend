@@ -23,7 +23,7 @@ final userSearchControllerProvider = StateNotifierProvider.autoDispose<UserSearc
   return UserSearchController(userRepository);
 });
 
-final userProfileControllerProvider = FutureProvider.family<User, String>((ref, userId) async {
+final userProfileControllerProvider = FutureProvider.autoDispose.family<User, String>((ref, userId) async {
   final repository = ref.watch(userRepositoryProvider);
   
   final result = await repository.getUserById(userId);
