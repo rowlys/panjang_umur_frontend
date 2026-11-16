@@ -59,6 +59,7 @@ class TransactionEntry {
   final String referenceId;
   final String title;
   final String counterpartyUsername;
+  final String? counterpartyAvatarUrl;
   final DateTime timestamp;
 
   TransactionEntry({
@@ -70,6 +71,7 @@ class TransactionEntry {
     required this.referenceId,
     required this.title,
     required this.counterpartyUsername,
+    this.counterpartyAvatarUrl,
     required this.timestamp,
   });
 
@@ -86,6 +88,10 @@ class TransactionEntry {
       title: json['title'] as String? ?? '',
       counterpartyUsername:
           json['counterpartyUsername'] as String? ?? 'Unknown',
+      counterpartyAvatarUrl:
+          (json['counterpartyAvatarUrl'] as String?)?.isEmpty ?? true
+              ? null
+              : json['counterpartyAvatarUrl'] as String,
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }

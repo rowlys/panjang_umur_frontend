@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
 
@@ -266,14 +267,10 @@ class _ClaimTileState extends ConsumerState<_ClaimTile> {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  imageUrl: claim.redeemerAvatarUrl,
+                  name: redeemerUsername,
                   radius: 16,
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                  child: Text(
-                    redeemerUsername.isNotEmpty ? redeemerUsername[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(

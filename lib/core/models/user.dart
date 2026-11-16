@@ -1,16 +1,23 @@
 enum Gender { unspecified, male, female }
 
+String? _avatarUrlFromJson(Object? value) {
+  if (value is! String || value.isEmpty) return null;
+  return value;
+}
+
 class User {
   final String id;
   final String name;
   final String username;
   final Gender gender;
+  final String? avatarUrl;
 
   User({
     required this.id,
     required this.name,
     required this.username,
     this.gender = Gender.unspecified,
+    this.avatarUrl,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -19,6 +26,7 @@ class User {
       name: json['name'] as String,
       username: json['username'] as String,
       gender: Gender.values.elementAtOrNull(json['gender'] as int? ?? 0) ?? Gender.unspecified,
+      avatarUrl: _avatarUrlFromJson(json['avatarUrl']),
     );
   }
 
@@ -28,6 +36,7 @@ class User {
       'name': name,
       'username': username,
       'gender': gender.index,
+      'avatarUrl': avatarUrl,
     };
   }
 }
@@ -39,12 +48,14 @@ class ForeignUser {
   final String? name;
   final String username;
   final FriendRelation friendStatus;
+  final String? avatarUrl;
 
   ForeignUser({
     required this.id,
     this.name,
     required this.username,
     required this.friendStatus,
+    this.avatarUrl,
   });
 
   factory ForeignUser.fromJson(Map<String, dynamic> json) {
@@ -53,6 +64,7 @@ class ForeignUser {
       name: json['name'] as String?,
       username: json['username'] as String,
       friendStatus: _parseFriendStatus(json['status'] as int),
+      avatarUrl: _avatarUrlFromJson(json['avatarUrl']),
     );
   }
 
@@ -63,6 +75,7 @@ class ForeignUser {
       'name': name,
       'username': username,
       'status': friendStatus.index,
+      'avatarUrl': avatarUrl,
     };
   }
 

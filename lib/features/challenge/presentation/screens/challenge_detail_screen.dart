@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/full_screen_image_viewer.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
@@ -16,7 +18,6 @@ import '../../domain/models/challenge.dart';
 import '../../domain/models/challenge_submission.dart';
 import '../../domain/models/submission_received.dart';
 import '../providers/challenge_providers.dart';
-import '../widgets/full_screen_photo_viewer.dart';
 
 class ChallengeDetailScreen extends ConsumerWidget {
   final String id;
@@ -46,14 +47,10 @@ class ChallengeDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    CircleAvatar(
+                    UserAvatar(
+                      imageUrl: challenge.creator.avatarUrl,
+                      name: challenge.creator.name,
                       radius: 12,
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                      child: Text(
-                        challenge.creator.name.isNotEmpty ? challenge.creator.name[0].toUpperCase() : '?',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -155,7 +152,11 @@ class _AssigneesSectionState extends State<_AssigneesSection> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (final user in visible) Chip(label: Text('@${user.username}')),
+            for (final user in visible)
+              Chip(
+                avatar: UserAvatar(imageUrl: user.avatarUrl, name: user.name, radius: 12),
+                label: Text('@${user.username}'),
+              ),
             if (isTruncated)
               ActionChip(
                 label: Text('Show all (${assignees.length})'),
@@ -588,14 +589,10 @@ class _SubmissionTileState extends State<_SubmissionTile> {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  imageUrl: submission.user.avatarUrl,
+                  name: submission.user.name,
                   radius: 16,
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                  child: Text(
-                    submission.user.name.isNotEmpty ? submission.user.name[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -630,7 +627,7 @@ class _SubmissionTileState extends State<_SubmissionTile> {
                 )
               else ...[
                 GestureDetector(
-                  onTap: () => showFullScreenPhoto(context, submission.proofUrl!),
+                  onTap: () => showFullScreenImage(context, submission.proofUrl!),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
@@ -670,3 +667,4 @@ class _SubmissionTileState extends State<_SubmissionTile> {
     );
   }
 }
+

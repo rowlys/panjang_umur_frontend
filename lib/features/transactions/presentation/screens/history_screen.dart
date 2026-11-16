@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/features/transactions/domain/models/transaction_entry.dart';
 import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
@@ -146,15 +147,6 @@ class _TransactionTile extends StatelessWidget {
 
   const _TransactionTile({required this.entry});
 
-  IconData get _icon {
-    switch (entry.referenceType) {
-      case TransactionReferenceType.claim:
-        return Icons.card_giftcard;
-      case TransactionReferenceType.submission:
-        return Icons.emoji_events_outlined;
-    }
-  }
-
   String get _subtitleVerb {
     switch (entry.label) {
       case 'Bought':
@@ -198,11 +190,10 @@ class _TransactionTile extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
-            CircleAvatar(
+            UserAvatar(
+              imageUrl: entry.counterpartyAvatarUrl,
+              name: entry.counterpartyUsername,
               radius: 18,
-              backgroundColor: scheme.primaryContainer,
-              foregroundColor: scheme.onPrimaryContainer,
-              child: Icon(_icon, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(

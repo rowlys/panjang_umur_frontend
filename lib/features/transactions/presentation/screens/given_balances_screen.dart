@@ -35,6 +35,7 @@ class GivenBalancesScreen extends ConsumerWidget {
                 return BalanceTile(
                   name: balance.ownerName,
                   username: balance.ownerUsername,
+                  avatarUrl: balance.ownerAvatarUrl,
                   balance: balance.balance,
                 );
               },

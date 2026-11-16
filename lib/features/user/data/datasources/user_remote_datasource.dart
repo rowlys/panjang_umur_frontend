@@ -1,6 +1,7 @@
 import 'package:panjang_umur_frontend/core/network/dio_client.dart';
 
 import '../../../../core/models/user.dart';
+import '../../domain/models/avatar_upload_slot.dart';
 
 class UserRemoteDataSource {
   final DioClient _client;
@@ -38,5 +39,20 @@ class UserRemoteDataSource {
       'currentPassword': currentPassword,
       'newPassword': newPassword,
     });
+  }
+
+  Future<AvatarUploadSlot> getAvatarUploadUrl() async {
+    final response = await _client.get('/users/me/avatar-upload-url');
+    return AvatarUploadSlot.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<User> updateAvatar(String imageId) async {
+    final response = await _client.patch('/users/me/avatar', data: {'imageId': imageId});
+    return User.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<User> removeAvatar() async {
+    final response = await _client.delete('/users/me/avatar');
+    return User.fromJson(response.data as Map<String, dynamic>);
   }
 }

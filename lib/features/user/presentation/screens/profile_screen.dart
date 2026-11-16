@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/full_screen_image_viewer.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -41,14 +43,13 @@ class ProfileScreen extends ConsumerWidget {
               children: [
               
                 
-                CircleAvatar(
+                UserAvatar(
+                  imageUrl: user.avatarUrl,
+                  name: user.name,
                   radius: 48,
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                  child: Text(
-                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-                  ),
+                  onTap: user.avatarUrl == null
+                      ? null
+                      : () => showFullScreenImage(context, user.avatarUrl!),
                 ),
                 const SizedBox(height: 12),
                 

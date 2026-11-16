@@ -88,6 +88,8 @@ class RewardClaim {
   final DateTime? resolvedAt;
   final String? redeemerUsername;
   final String? giverUsername;
+  final String? redeemerAvatarUrl;
+  final String? giverAvatarUrl;
 
   RewardClaim({
     required this.id,
@@ -102,6 +104,8 @@ class RewardClaim {
     this.resolvedAt,
     this.redeemerUsername,
     this.giverUsername,
+    this.redeemerAvatarUrl,
+    this.giverAvatarUrl,
   });
 
   factory RewardClaim.fromJson(Map<String, dynamic> json) {
@@ -118,6 +122,8 @@ class RewardClaim {
       resolvedAt: json['resolvedAt'] != null ? DateTime.parse(json['resolvedAt'] as String) : null,
       redeemerUsername: json['redeemerUsername'] as String?,
       giverUsername: json['giverUsername'] as String?,
+      redeemerAvatarUrl: json['redeemerAvatarUrl'] as String?,
+      giverAvatarUrl: json['giverAvatarUrl'] as String?,
     );
   }
 }

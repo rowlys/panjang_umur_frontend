@@ -6,6 +6,7 @@ import 'package:panjang_umur_frontend/features/friends/presentation/providers/fr
 import 'package:panjang_umur_frontend/features/chat/presentation/providers/chat_providers.dart';
 import 'package:panjang_umur_frontend/features/chat/domain/models/conversation_summary.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 
 import '../widgets/friend_requests_sheet.dart';
 
@@ -98,8 +99,10 @@ class FriendScreen extends ConsumerWidget {
                             child: Badge(
                               isLabelVisible: (summary?.unreadCount ?? 0) > 0,
                               label: Text('${summary?.unreadCount}'),
-                              child: CircleAvatar(
-                                child: Text(friend.name.substring(0, 1).toUpperCase()),
+                              child: UserAvatar(
+                                imageUrl: friend.avatarUrl,
+                                name: friend.name,
+                                radius: 20,
                               ),
                             ),
                           ),

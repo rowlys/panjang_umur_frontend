@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:panjang_umur_frontend/core/presentation/widgets/full_screen_image_viewer.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 import 'package:panjang_umur_frontend/features/transactions/presentation/providers/transaction_providers.dart';
 import '../../domain/models/submission_received.dart';
 import '../../domain/models/submission_submitted.dart';
 import '../providers/challenge_providers.dart';
-import '../widgets/full_screen_photo_viewer.dart';
 
 class PendingSubmissionsScreen extends StatelessWidget {
   const PendingSubmissionsScreen({super.key});
@@ -125,7 +126,7 @@ class _SubmittedTile extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Submitted ${submission.submittedAt.toLocal().toString().split('.').first} · '
+                    'Submitted ${submission.submittedAt.toLocal().toString().split('.').first} Â· '
                     '${submission.challengePoints} pts',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -250,23 +251,10 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  imageUrl: submission.user.avatarUrl,
+                  name: submission.user.name,
                   radius: 16,
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer,
-                  foregroundColor: Theme.of(
-                    context,
-                  ).colorScheme.onPrimaryContainer,
-                  child: Text(
-                    submission.user.name.isNotEmpty
-                        ? submission.user.name[0].toUpperCase()
-                        : '?',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -278,7 +266,7 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '${submission.challengeTitle} · ${submission.challengePoints} pts',
+                        '${submission.challengeTitle} Â· ${submission.challengePoints} pts',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -315,7 +303,7 @@ class _ReceivedTileState extends ConsumerState<_ReceivedTile> {
                 )
               else ...[
                 GestureDetector(
-                  onTap: () => showFullScreenPhoto(context, submission.proofUrl!),
+                  onTap: () => showFullScreenImage(context, submission.proofUrl!),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
@@ -362,3 +350,4 @@ class _LoadMoreFooter extends StatelessWidget {
     );
   }
 }
+

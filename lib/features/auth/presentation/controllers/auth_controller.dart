@@ -56,6 +56,13 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
     await _authRepository.logOut();
   }
 
+  /// Replaces the signed-in user without a round trip. Used after actions that
+  /// already return the updated user, such as changing the profile picture.
+  void setUser(User user) {
+    if (!mounted) return;
+    state = AsyncValue.data(user);
+  }
+
   Future<void> register(String name, String username, String password, Gender gender) async {
     state = const AsyncValue.loading();
     final result = await _authRepository.register(name, username, password, gender);

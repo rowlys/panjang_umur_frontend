@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/full_screen_image_viewer.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 
 import '../../../user/presentation/providers/user_providers.dart';
 import '../../../friends/presentation/providers/friend_providers.dart';
@@ -90,14 +92,13 @@ class ForeignProfileScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
+                UserAvatar(
+                  imageUrl: user.avatarUrl,
+                  name: user.name,
                   radius: 48,
-                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                  child: Text(
-                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-                  ),
+                  onTap: user.avatarUrl == null
+                      ? null
+                      : () => showFullScreenImage(context, user.avatarUrl!),
                 ),
                 const SizedBox(height: 12),
                 Text(

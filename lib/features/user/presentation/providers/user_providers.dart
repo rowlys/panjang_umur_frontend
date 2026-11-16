@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/models/user.dart';
 import '../../../../core/providers/core_providers.dart';
 import '../../../../core/utils/result.dart';
+import '../../data/datasources/avatar_upload_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/user_repositories.dart';
@@ -13,9 +15,14 @@ final userRemoteDataSourceProvider = Provider<UserRemoteDataSource>((ref) {
   return UserRemoteDataSource(dioClient);
 });
 
+final avatarUploadDataSourceProvider = Provider<AvatarUploadDataSource>((ref) {
+  return AvatarUploadDataSource(Dio());
+});
+
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   final remoteDataSource = ref.watch(userRemoteDataSourceProvider);
-  return UserRepositoryImpl(remoteDataSource);
+  final avatarUploadDataSource = ref.watch(avatarUploadDataSourceProvider);
+  return UserRepositoryImpl(remoteDataSource, avatarUploadDataSource);
 });
 
 final userSearchControllerProvider = StateNotifierProvider.autoDispose<UserSearchController, AsyncValue<List<ForeignUser>>>((ref) {

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/presentation/widgets/user_avatar.dart';
+
 class BalanceTile extends StatelessWidget {
   final String name;
   final String username;
   final int balance;
+  final String? avatarUrl;
 
   const BalanceTile({
     super.key,
     required this.name,
     required this.username,
     required this.balance,
+    this.avatarUrl,
   });
 
   @override
@@ -19,13 +23,10 @@ class BalanceTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: scheme.primaryContainer,
-          foregroundColor: scheme.onPrimaryContainer,
-          child: Text(
-            name.isNotEmpty ? name[0].toUpperCase() : '?',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+        leading: UserAvatar(
+          imageUrl: avatarUrl,
+          name: name,
+          radius: 20,
         ),
         title: Text(name),
         subtitle: Text('@$username'),

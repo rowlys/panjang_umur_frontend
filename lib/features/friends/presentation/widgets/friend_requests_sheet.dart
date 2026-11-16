@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
@@ -53,7 +54,11 @@ class FriendRequestSheet extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final request = incomingRequests[index];
                       return ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.person)),
+                        leading: UserAvatar(
+                          imageUrl: request.requester.avatarUrl,
+                          name: request.requester.name,
+                          radius: 20,
+                        ),
                         title: Text(request.requester.username),
                         subtitle: const Text('wants to be your friend'),
                         trailing: Row(

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../user/presentation/providers/user_providers.dart';
 
 import 'package:panjang_umur_frontend/core/models/user.dart';
+import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
 
 import '../../../friends/presentation/widgets/add_friend_button.dart';
 
@@ -91,16 +92,16 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
     final displayName = (user.name != null && user.name!.isNotEmpty) 
         ? user.name! 
         : user.username;
-    
-    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
 
     return ListTile(
       leading: GestureDetector(
         onTap: () {
           context.push('/foreign-profile/${user.id}');
         },
-        child: CircleAvatar(
-          child: Text(initial),
+        child: UserAvatar(
+          imageUrl: user.avatarUrl,
+          name: displayName,
+          radius: 20,
         ),
       ),
       title: Text(displayName),

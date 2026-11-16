@@ -12,4 +12,13 @@ void main() {
     expect(parse(null), Gender.unspecified);
     expect(parse(9), Gender.unspecified);
   });
+
+  test('treats a missing or empty avatar as no avatar', () {
+    String? avatar(Object? value) =>
+        User.fromJson({'id': '1', 'name': 'n', 'username': 'u', 'avatarUrl': value}).avatarUrl;
+
+    expect(avatar('https://cdn.test/avatars/1/a.jpg'), 'https://cdn.test/avatars/1/a.jpg');
+    expect(avatar(''), isNull);
+    expect(avatar(null), isNull);
+  });
 }
