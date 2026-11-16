@@ -18,11 +18,11 @@ import '../../features/friends/presentation/screens/friend_screen.dart';
 
 import '../../features/challenge/presentation/screens/challenge_screen.dart';
 import '../../features/challenge/presentation/screens/challenge_detail_screen.dart';
-import '../../features/challenge/presentation/screens/create_challenge_screen.dart';
+import '../../features/challenge/presentation/screens/challenge_form_screen.dart';
 import '../../features/challenge/presentation/screens/pending_submissions_screen.dart';
 
 import '../../features/rewards/presentation/screens/my_store_screen.dart';
-import '../../features/rewards/presentation/screens/create_reward_screen.dart';
+import '../../features/rewards/presentation/screens/reward_form_screen.dart';
 import '../../features/rewards/presentation/screens/friend_shop_screen.dart';
 import '../../features/rewards/presentation/screens/my_claims_screen.dart';
 import '../../features/rewards/presentation/screens/reward_detail_screen.dart';
@@ -156,11 +156,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/challenges/new',
-        builder: (context, state) => const CreateChallengeScreen(),
+        builder: (context, state) => const ChallengeFormScreen(),
       ),
       GoRoute(
         path: '/challenges/pending-submissions',
         builder: (context, state) => const PendingSubmissionsScreen(),
+      ),
+      GoRoute(
+        path: '/challenges/:id/edit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return ChallengeFormScreen(challengeId: id);
+        },
       ),
       GoRoute(
         path: '/challenges/:id',
@@ -171,7 +178,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/rewards/new',
-        builder: (context, state) => const CreateRewardScreen(),
+        builder: (context, state) => const RewardFormScreen(),
+      ),
+      GoRoute(
+        path: '/rewards/:id/edit',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return RewardFormScreen(rewardId: id);
+        },
       ),
       GoRoute(
         path: '/rewards/:id',
