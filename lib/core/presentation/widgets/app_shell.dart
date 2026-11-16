@@ -6,12 +6,10 @@ import '../../../features/challenge/presentation/providers/challenge_providers.d
 import '../../../features/chat/presentation/providers/chat_providers.dart';
 import '../../../features/friends/presentation/providers/friend_providers.dart';
 import '../../../features/rewards/presentation/providers/reward_providers.dart';
-import '../../../features/transactions/presentation/providers/transaction_providers.dart';
 
 const _challengesBranchIndex = 0;
 const _myStoreBranchIndex = 1;
 const _friendsBranchIndex = 2;
-const _historyBranchIndex = 3;
 
 typedef _Destination = ({IconData icon, IconData selectedIcon, String label});
 
@@ -39,8 +37,6 @@ class AppShell extends ConsumerWidget {
         ref.read(friendControllerProvider.notifier).getFriends();
         ref.read(friendRequestControllerProvider.notifier).getFriendRequests();
         ref.read(conversationSummariesControllerProvider.notifier).refresh();
-      case _historyBranchIndex:
-        ref.read(transactionHistoryControllerProvider.notifier).loadHistory();
     }
     navigationShell.goBranch(
       index,

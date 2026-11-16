@@ -39,18 +39,16 @@ class TransactionHistoryController
   final TransactionRepository _transactionRepository;
 
   TransactionHistoryController(this._transactionRepository)
-    : super(
-        const AsyncValue.data(
-          TransactionHistoryPage(entries: [], hasMore: false),
-        ),
-      );
+    : super(const AsyncValue.loading());
 
   Future<void> loadHistory({TransactionDomainFilter? domainFilter}) async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<TransactionHistoryPage>.loading().copyWithPrevious(state);
     final result = await _transactionRepository.getHistory(
       domainFilter: domainFilter,
       limit: _historyPageSize,
     );
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final entries):
@@ -82,6 +80,8 @@ class TransactionHistoryController
       before: page.entries.last.timestamp,
       limit: _historyPageSize,
     );
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final more):
