@@ -11,6 +11,9 @@ class Reward {
   final bool isAvailable;
   final DateTime createdAt;
   final DateTime updatedAt;
+  /// Only present when the owner fetches their own reward. Friends browsing a
+  /// shop never receive this list.
+  final List<String> allowedUserIds;
 
   Reward({
     required this.id,
@@ -23,6 +26,7 @@ class Reward {
     required this.isAvailable,
     required this.createdAt,
     required this.updatedAt,
+    this.allowedUserIds = const [],
   });
 
   factory Reward.fromJson(Map<String, dynamic> json) {
@@ -37,6 +41,7 @@ class Reward {
       isAvailable: json['isAvailable'] as bool,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      allowedUserIds: (json['allowedUserIds'] as List<dynamic>?)?.cast<String>() ?? const [],
     );
   }
 
@@ -52,6 +57,7 @@ class Reward {
       'isAvailable': isAvailable,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'allowedUserIds': allowedUserIds,
     };
   }
 }

@@ -51,8 +51,26 @@ class RewardRemoteDataSource {
     return Reward.fromJson(response.data);
   }
 
-  Future<Reward> updateStock(String rewardId, int stock) async {
-    final response = await _client.patch('/rewards/$rewardId/stock', data: {'stock': stock});
+  Future<Reward> update(
+    String rewardId, {
+    String? title,
+    String? description,
+    int? cost,
+    int? stock,
+    RewardVisibility? visibility,
+    List<String>? allowedUserIds,
+  }) async {
+    final response = await _client.patch(
+      '/rewards/$rewardId',
+      data: {
+        'title': ?title,
+        'description': ?description,
+        'cost': ?cost,
+        'stock': ?stock,
+        'visibility': ?visibility?.index,
+        if (visibility == RewardVisibility.restricted) 'allowedUserIds': allowedUserIds ?? const [],
+      },
+    );
     return Reward.fromJson(response.data);
   }
 

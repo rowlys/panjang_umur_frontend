@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
@@ -52,11 +53,24 @@ class RewardDetailScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                _StockEditor(rewardId: id, currentStock: reward.stock),
-                if (reward.isAvailable && reward.stock > 0) ...[
-                  const SizedBox(height: 16),
-                  _CancelButton(rewardId: id),
-                ],
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () async {
+                          await context.push('/rewards/${reward.id}/edit');
+                          ref.invalidate(rewardDetailProvider(reward.id));
+                        },
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text('Edit Reward'),
+                      ),
+                    ),
+                    if (reward.isAvailable && reward.stock > 0) ...[
+                      const SizedBox(width: 12),
+                      Expanded(child: _CancelButton(rewardId: id)),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: 24),
                 Text('Claims', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
@@ -68,109 +82,6 @@ class RewardDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Failed to load reward:\n$error')),
       ),
-    );
-  }
-}
-
-class _StockEditor extends ConsumerStatefulWidget {
-  final String rewardId;
-  final int currentStock;
-
-  const _StockEditor({required this.rewardId, required this.currentStock});
-
-  @override
-  ConsumerState<_StockEditor> createState() => _StockEditorState();
-}
-
-class _StockEditorState extends ConsumerState<_StockEditor> {
-  late final TextEditingController _controller;
-  bool _isSaving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.currentStock.toString());
-  }
-
-  @override
-  void didUpdateWidget(covariant _StockEditor oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentStock != widget.currentStock && !_isSaving) {
-      _controller.text = widget.currentStock.toString();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleSave() async {
-    final stock = int.tryParse(_controller.text.trim());
-    if (stock == null || stock < 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid stock amount (0 or more).')),
-      );
-      return;
-    }
-
-    setState(() => _isSaving = true);
-    final result = await ref.read(myShopControllerProvider.notifier).updateStock(widget.rewardId, stock);
-    if (!mounted) return;
-    setState(() => _isSaving = false);
-    ref.invalidate(rewardDetailProvider(widget.rewardId));
-
-    switch (result) {
-      case Success():
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Stock updated.')),
-        );
-      case Error(failure: final failure):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(failure.message)),
-        );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Stock', style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            SizedBox(
-              width: 120,
-              child: TextField(
-                controller: _controller,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
-              ),
-            ),
-            const SizedBox(width: 12),
-            FilledButton(
-              onPressed: _isSaving ? null : _handleSave,
-              child: _isSaving
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Update Stock'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Setting stock to 0 makes this reward unavailable. Raising it back above 0 makes it available again.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
-      ],
     );
   }
 }
@@ -202,7 +113,7 @@ class _CancelButtonState extends ConsumerState<_CancelButton> {
     if (confirmed != true) return;
 
     setState(() => _isCanceling = true);
-    final result = await ref.read(myShopControllerProvider.notifier).updateStock(widget.rewardId, 0);
+    final result = await ref.read(myShopControllerProvider.notifier).update(widget.rewardId, stock: 0);
     if (!mounted) return;
     setState(() => _isCanceling = false);
     ref.invalidate(rewardDetailProvider(widget.rewardId));

@@ -15,7 +15,15 @@ abstract class RewardRepository {
   Future<Result<List<Reward>>> getShopByGiver(String giverId, {bool? availableOnly});
   Future<Result<Reward>> redeem(String rewardId);
   Future<Result<Reward>> getById(String rewardId);
-  Future<Result<Reward>> updateStock(String rewardId, int stock);
+  Future<Result<Reward>> update(
+    String rewardId, {
+    String? title,
+    String? description,
+    int? cost,
+    int? stock,
+    RewardVisibility? visibility,
+    List<String>? allowedUserIds,
+  });
 
   Future<Result<List<RewardClaim>>> getClaimsGiven({String? rewardId, DateTime? before, int? limit});
   Future<Result<List<RewardClaim>>> getClaimsRedeemed({String? giverId, DateTime? before, int? limit});

@@ -96,9 +96,25 @@ class RewardRepositoryImpl implements RewardRepository {
   }
 
   @override
-  Future<Result<Reward>> updateStock(String rewardId, int stock) async {
+  Future<Result<Reward>> update(
+    String rewardId, {
+    String? title,
+    String? description,
+    int? cost,
+    int? stock,
+    RewardVisibility? visibility,
+    List<String>? allowedUserIds,
+  }) async {
     try {
-      final reward = await _rewardRemoteDataSource.updateStock(rewardId, stock);
+      final reward = await _rewardRemoteDataSource.update(
+        rewardId,
+        title: title,
+        description: description,
+        cost: cost,
+        stock: stock,
+        visibility: visibility,
+        allowedUserIds: allowedUserIds,
+      );
       return Success(reward);
     } on NetworkException catch (e) {
       return Error(NetworkFailure(e.message));

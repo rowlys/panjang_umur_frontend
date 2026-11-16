@@ -11,8 +11,10 @@ class MyShopController extends StateNotifier<AsyncValue<List<Reward>>> {
   }
 
   Future<void> getMyShop() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<Reward>>.loading().copyWithPrevious(state);
     final result = await _rewardRepository.getMyShop();
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final rewards):
@@ -40,17 +42,51 @@ class MyShopController extends StateNotifier<AsyncValue<List<Reward>>> {
     );
 
     if (result is Success<Reward>) {
-      await getMyShop();
+      _upsert(result.data);
     }
     return result;
   }
 
-  Future<Result<Reward>> updateStock(String rewardId, int stock) async {
-    final result = await _rewardRepository.updateStock(rewardId, stock);
+  Future<Result<Reward>> update(
+    String rewardId, {
+    String? title,
+    String? description,
+    int? cost,
+    int? stock,
+    RewardVisibility? visibility,
+    List<String>? allowedUserIds,
+  }) async {
+    final result = await _rewardRepository.update(
+      rewardId,
+      title: title,
+      description: description,
+      cost: cost,
+      stock: stock,
+      visibility: visibility,
+      allowedUserIds: allowedUserIds,
+    );
 
     if (result is Success<Reward>) {
-      await getMyShop();
+      _upsert(result.data);
     }
     return result;
+  }
+
+  /// Replaces the reward in place, or adds it when it is new. Keeps the list on
+  /// screen instead of reloading it.
+  void _upsert(Reward reward) {
+    if (!mounted) return;
+    final current = state.valueOrNull;
+    if (current == null) return;
+
+    final index = current.indexWhere((entry) => entry.id == reward.id);
+    if (index == -1) {
+      state = AsyncValue.data([reward, ...current]);
+      return;
+    }
+
+    final next = [...current];
+    next[index] = reward;
+    state = AsyncValue.data(next);
   }
 }

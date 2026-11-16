@@ -12,8 +12,10 @@ class FriendShopController extends StateNotifier<AsyncValue<List<Reward>>> {
   }
 
   Future<void> getShop() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<Reward>>.loading().copyWithPrevious(state);
     final result = await _rewardRepository.getShopByGiver(giverId, availableOnly: true);
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final rewards):
@@ -26,8 +28,23 @@ class FriendShopController extends StateNotifier<AsyncValue<List<Reward>>> {
   Future<Result<Reward>> redeem(String rewardId) async {
     final result = await _rewardRepository.redeem(rewardId);
 
+    if (!mounted) return result;
+
     if (result is Success<Reward>) {
-      await getShop();
+      final current = state.valueOrNull;
+      if (current != null) {
+        // The server returns the reward with its new stock. Patch the shelf
+        // locally instead of reloading the whole shop.
+        final next = <Reward>[];
+        for (final reward in current) {
+          if (reward.id != result.data.id) {
+            next.add(reward);
+          } else if (result.data.stock > 0) {
+            next.add(result.data);
+          }
+        }
+        state = AsyncValue.data(next);
+      }
     }
     return result;
   }

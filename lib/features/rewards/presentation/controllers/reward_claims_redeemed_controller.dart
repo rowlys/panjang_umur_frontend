@@ -36,13 +36,15 @@ class RewardClaimsRedeemedController extends StateNotifier<AsyncValue<RewardClai
   final String? giverId;
 
   RewardClaimsRedeemedController(this._rewardRepository, {this.giverId})
-      : super(const AsyncValue.data(RewardClaimsRedeemedPage(claims: [], hasMore: false))) {
+      : super(const AsyncValue.loading()) {
     loadClaims();
   }
 
   Future<void> loadClaims() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<RewardClaimsRedeemedPage>.loading().copyWithPrevious(state);
     final result = await _rewardRepository.getClaimsRedeemed(giverId: giverId, limit: _claimsPageSize);
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final claims):
@@ -68,6 +70,8 @@ class RewardClaimsRedeemedController extends StateNotifier<AsyncValue<RewardClai
       before: page.claims.last.redeemedAt,
       limit: _claimsPageSize,
     );
+
+    if (!mounted) return Success(null);
 
     switch (result) {
       case Success(data: final more):
