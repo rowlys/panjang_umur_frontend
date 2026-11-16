@@ -28,11 +28,20 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     });
   }
 
-  void _handleSend() {
+  Future<void> _handleSend() async {
     final text = _messageController.text;
     if (text.trim().isEmpty) return;
-    ref.read(chatRoomControllerProvider(widget.friendId).notifier).sendMessage(text);
-    _messageController.clear();
+
+    final sent = await ref.read(chatRoomControllerProvider(widget.friendId).notifier).sendMessage(text);
+    if (!mounted) return;
+
+    if (sent) {
+      _messageController.clear();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Not connected. Your message was not sent.')),
+      );
+    }
   }
 
   @override

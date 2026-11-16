@@ -19,5 +19,7 @@ abstract class ChatRepository {
 
   Stream<ReadReceipt> get incomingReadReceipts;
 
-  void sendMessage(String friendId, String body);
+  /// Returns false when the socket is not connected, so the caller can keep
+  /// the typed text instead of losing it.
+  Future<bool> sendMessage(String friendId, String body);
 }

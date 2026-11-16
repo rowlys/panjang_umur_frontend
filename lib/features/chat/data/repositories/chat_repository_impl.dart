@@ -22,8 +22,8 @@ class ChatRepositoryImpl implements ChatRepository {
   Stream<ReadReceipt> get incomingReadReceipts => _chatSocketDataSource.readReceipts;
 
   @override
-  void sendMessage(String friendId, String body) {
-    _chatSocketDataSource.send(friendId, body);
+  Future<bool> sendMessage(String friendId, String body) {
+    return _chatSocketDataSource.send(friendId, body);
   }
 
   @override

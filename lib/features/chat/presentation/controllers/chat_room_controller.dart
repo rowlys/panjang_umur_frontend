@@ -145,10 +145,10 @@ class ChatRoomController extends StateNotifier<AsyncValue<ChatRoomState>> {
     }
   }
 
-  void sendMessage(String body) {
+  Future<bool> sendMessage(String body) async {
     final trimmed = body.trim();
-    if (trimmed.isEmpty) return;
-    _chatRepository.sendMessage(_friendId, trimmed);
+    if (trimmed.isEmpty) return true;
+    return _chatRepository.sendMessage(_friendId, trimmed);
   }
 
   @override
