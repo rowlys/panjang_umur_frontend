@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/friends/presentation/providers/friend_providers.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
 
@@ -61,14 +62,31 @@ class FriendRequestSheet extends ConsumerWidget {
                             IconButton(
                               icon: const Icon(Icons.check_circle, color: AppTheme.success),
                               onPressed: () async {
-                                await ref.read(friendRequestControllerProvider.notifier).acceptFriendRequest(request.id);
+                                final result = await ref
+                                    .read(friendRequestControllerProvider.notifier)
+                                    .acceptFriendRequest(request.id);
+                                if (result case Error(failure: final failure)) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(failure.message)),
+                                  );
+                                  return;
+                                }
                                 ref.read(friendControllerProvider.notifier).getFriends();
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.cancel, color: Theme.of(context).colorScheme.error),
-                              onPressed: () {
-                                ref.read(friendRequestControllerProvider.notifier).declineFriendRequest(request.id);
+                              onPressed: () async {
+                                final result = await ref
+                                    .read(friendRequestControllerProvider.notifier)
+                                    .declineFriendRequest(request.id);
+                                if (result case Error(failure: final failure)) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(failure.message)),
+                                  );
+                                }
                               },
                             ),
                           ],

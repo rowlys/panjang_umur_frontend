@@ -26,20 +26,6 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
-  Future<Result<void>> addFriend(String userId) async {
-    try {
-      await _friendRemoteDataSource.addFriend(userId);
-      return Success(null);
-    } on NetworkException catch (e) {
-      return Error(NetworkFailure(e.message));
-    } on ServerException catch (e) {
-      return Error(ServerFailure(e.message));
-    } catch (e) {
-      return Error(UnexpectedFailure(e.toString()));
-    }
-  }
-
-  @override
   Future<Result<void>> removeFriend(String friendId) async {
     try {
       await _friendRemoteDataSource.removeFriend(friendId);

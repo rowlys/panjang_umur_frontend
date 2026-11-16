@@ -14,8 +14,10 @@ class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFri
   }
 
   Future<void> getFriendRequests() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<(List<IncomingFriendRequest>, List<OutgoingFriendRequest>)>.loading().copyWithPrevious(state);
     final result = await _friendRequestRepository.getFriendRequests();
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final requests):
@@ -25,39 +27,29 @@ class FriendRequestController extends StateNotifier<AsyncValue<(List<IncomingFri
     }
   }
 
-  Future<void> acceptFriendRequest(String requestId) async {
-    state = const AsyncValue.loading();
+  Future<Result<void>> acceptFriendRequest(String requestId) async {
     final result = await _friendRequestRepository.acceptFriendRequest(requestId);
-
-    switch (result) {
-      case Success(data: _):
-        await getFriendRequests();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
+    if (result is Success<void>) {
+      await getFriendRequests();
     }
+    return result;
   }
 
-  Future<void> declineFriendRequest(String requestId) async {
-    state = const AsyncValue.loading();
+  Future<Result<void>> declineFriendRequest(String requestId) async {
     final result = await _friendRequestRepository.declineFriendRequest(requestId);
-
-    switch (result) {
-      case Success(data: _):
-        await getFriendRequests();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
+    if (result is Success<void>) {
+      await getFriendRequests();
     }
+    return result;
   }
 
-  Future<void> sendFriendRequest(String userId) async {
-    state = const AsyncValue.loading();
+  /// Sends a request and refreshes the lists. Unlike accepting, this does not
+  /// flip the whole page into a loading state, so the button can react itself.
+  Future<Result<void>> sendFriendRequest(String userId) async {
     final result = await _friendRequestRepository.sendFriendRequest(userId);
-
-    switch (result) {
-      case Success(data: _):
-        await getFriendRequests();
-      case Error(failure: final error):
-        state = AsyncValue.error(error.message, StackTrace.current);
+    if (result is Success<void>) {
+      await getFriendRequests();
     }
+    return result;
   }
 }

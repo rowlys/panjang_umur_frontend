@@ -12,10 +12,6 @@ class FriendRemoteDataSource {
     return data.map((json) => User.fromJson(json)).toList();
   }
 
-  Future<void> addFriend(String userId) async {
-    await _client.post('/friends/requests', data: {'userId': userId});
-  }
-
   Future<void> removeFriend(String friendId) async {
     await _client.delete('/friends/$friendId');
   }

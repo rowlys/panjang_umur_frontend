@@ -4,6 +4,5 @@ import '../../../../core/models/user.dart';
 
 abstract class FriendRepository {
   Future<Result<List<User>>> getFriends();
-  Future<Result<void>> addFriend(String userId);
   Future<Result<void>> removeFriend(String friendId);
 }

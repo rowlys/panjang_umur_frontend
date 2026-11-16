@@ -13,8 +13,10 @@ class FriendController extends StateNotifier<AsyncValue<List<User>>> {
   }
 
   Future<void> getFriends() async {
-    state = const AsyncValue.loading();
+    state = AsyncValue<List<User>>.loading().copyWithPrevious(state);
     final result = await _friendRepository.getFriends();
+
+    if (!mounted) return;
 
     switch (result) {
       case Success(data: final friends):

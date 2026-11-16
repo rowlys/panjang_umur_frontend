@@ -122,10 +122,16 @@ class ForeignProfileScreen extends ConsumerWidget {
                       if (incomingRequest != null)
                         FilledButton.icon(
                           onPressed: () async {
-                            await ref
+                            final result = await ref
                                 .read(friendRequestControllerProvider.notifier)
                                 .acceptFriendRequest(incomingRequest.id);
                             if (!context.mounted) return;
+                            if (result case Error(failure: final failure)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(failure.message)),
+                              );
+                              return;
+                            }
                             ref.read(friendControllerProvider.notifier).getFriends();
                           },
                           icon: const Icon(Icons.check),
@@ -139,8 +145,16 @@ class ForeignProfileScreen extends ConsumerWidget {
                         )
                       else
                         FilledButton.icon(
-                          onPressed: () {
-                            ref.read(friendRequestControllerProvider.notifier).sendFriendRequest(id);
+                          onPressed: () async {
+                            final result = await ref
+                                .read(friendRequestControllerProvider.notifier)
+                                .sendFriendRequest(id);
+                            if (!context.mounted) return;
+                            if (result case Error(failure: final failure)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(failure.message)),
+                              );
+                            }
                           },
                           icon: const Icon(Icons.person_add),
                           label: const Text('Add Friend'),

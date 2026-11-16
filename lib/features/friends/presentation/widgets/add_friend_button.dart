@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:panjang_umur_frontend/core/utils/result.dart';
+
 import '../providers/friend_providers.dart';
 
 class AddFriendButton extends ConsumerStatefulWidget {
@@ -37,24 +39,18 @@ class _AddFriendButtonState extends ConsumerState<AddFriendButton> {
   Future<void> _handlePressed() async {
     setState(() => _isLoading = true);
 
-    try {
-      await ref.read(friendRequestControllerProvider.notifier).sendFriendRequest(widget.userId);
-      
-      if (mounted) {
-        setState(() {
-          _currentStatus = 1;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
+    final result = await ref.read(friendRequestControllerProvider.notifier).sendFriendRequest(widget.userId);
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    switch (result) {
+      case Success():
+        setState(() => _currentStatus = 1);
+      case Error(failure: final failure):
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(content: Text(failure.message)),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
   }
 
