@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/image_url.dart';
+
 /// Opens [imageUrl] in a full-screen, zoomable viewer.
 void showFullScreenImage(BuildContext context, String imageUrl) {
   Navigator.of(context).push(
@@ -8,7 +10,7 @@ void showFullScreenImage(BuildContext context, String imageUrl) {
       barrierColor: Colors.black,
       pageBuilder: (context, animation, secondaryAnimation) => FadeTransition(
         opacity: animation,
-        child: _FullScreenImageViewer(imageUrl: imageUrl),
+        child: _FullScreenImageViewer(imageUrl: resolveImageUrl(imageUrl)),
       ),
     ),
   );

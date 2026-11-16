@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/image_url.dart';
+
 /// A circular avatar for a user.
 ///
 /// Falls back to the user's initial when there is no picture (or the picture
@@ -42,7 +44,7 @@ class UserAvatar extends StatelessWidget {
       );
     }
 
-    final url = imageUrl;
+    final url = imageUrl == null ? null : resolveImageUrl(imageUrl!);
     final Widget content = (url == null || url.isEmpty)
         ? fallback()
         : Image.network(

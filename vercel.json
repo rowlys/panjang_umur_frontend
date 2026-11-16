@@ -1,4 +1,10 @@
 {
   "buildCommand": "bash vercel-build.sh",
-  "outputDirectory": "build/web"
+  "outputDirectory": "build/web",
+  "rewrites": [
+    {
+      "source": "/media/:path*",
+      "destination": "https://pub-14fd8aa9e28248008fd0d915cc176c27.r2.dev/:path*"
+    }
+  ]
 }

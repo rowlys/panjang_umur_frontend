@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:panjang_umur_frontend/core/models/user.dart';
 import 'package:panjang_umur_frontend/core/presentation/widgets/full_screen_image_viewer.dart';
 import 'package:panjang_umur_frontend/core/presentation/widgets/user_avatar.dart';
+import 'package:panjang_umur_frontend/core/utils/image_url.dart';
 import 'package:panjang_umur_frontend/core/utils/result.dart';
 import 'package:panjang_umur_frontend/features/auth/presentation/providers/auth_providers.dart';
 import 'package:panjang_umur_frontend/core/theme/app_theme.dart';
@@ -631,7 +632,7 @@ class _SubmissionTileState extends State<_SubmissionTile> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      submission.proofUrl!,
+                      resolveImageUrl(submission.proofUrl!),
                       height: 200,
                       width: double.infinity,
                       fit: BoxFit.cover,
