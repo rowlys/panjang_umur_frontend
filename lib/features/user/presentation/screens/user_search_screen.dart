@@ -18,8 +18,11 @@ class UserSearchScreen extends ConsumerStatefulWidget {
 }
 
 class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
+  static const _debounceDuration = Duration(milliseconds: 300);
+
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
+  bool _isDebouncing = false;
 
   @override
   void dispose() {
@@ -29,17 +32,43 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
   }
 
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce?.cancel();
+
+    if (query.trim().isEmpty) {
+      _stopDebounce();
+      ref.read(userSearchControllerProvider.notifier).clearSearch();
+      return;
+    }
+
+    if (!_isDebouncing) {
+      setState(() => _isDebouncing = true);
+    }
+
+    _debounce = Timer(_debounceDuration, () {
+      if (!mounted) return;
+      _stopDebounce();
       ref.read(userSearchControllerProvider.notifier).searchUsers(query);
     });
+  }
+
+  void _stopDebounce() {
+    if (!_isDebouncing) return;
+    setState(() => _isDebouncing = false);
+  }
+
+  void _clearSearch() {
+    _debounce?.cancel();
+    _stopDebounce();
+    _searchController.clear();
+    ref.read(userSearchControllerProvider.notifier).clearSearch();
   }
 
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(userSearchControllerProvider);
     final barForeground = Theme.of(context).appBarTheme.foregroundColor;
+    final hasQuery = _searchController.text.trim().isNotEmpty;
+    final isSearching = hasQuery && (_isDebouncing || searchState.isLoading);
 
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +77,7 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
           style: TextStyle(color: barForeground),
           cursorColor: barForeground,
           decoration: InputDecoration(
-            hintText: 'Search users...',
+            hintText: 'Search by username...',
             hintStyle: TextStyle(color: barForeground?.withValues(alpha: 0.7)),
             border: InputBorder.none,
           ),
@@ -58,32 +87,41 @@ class _UserSearchScreenState extends ConsumerState<UserSearchScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.clear),
-            onPressed: () {
-              _searchController.clear();
-              ref.read(userSearchControllerProvider.notifier).clearSearch();
-            },
+            onPressed: _clearSearch,
           )
         ],
       ),
-      body: searchState.when(
-        data: (users) {
-          if (users.isEmpty && _searchController.text.isNotEmpty) {
-            return const Center(child: Text('No users found.'));
-          } else if (users.isEmpty) {
-            return const Center(child: Text('Type to search for users.'));
-          }
+      body: isSearching
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 12),
+                  Text('Searching...'),
+                ],
+              ),
+            )
+          : searchState.when(
+              data: (users) {
+                if (!hasQuery) {
+                  return const Center(child: Text('Type a username to find someone.'));
+                }
+                if (users.isEmpty) {
+                  return const Center(child: Text('No user has that username.'));
+                }
 
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              final user = users[index];
-              return _buildUserTile(user, ref);
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
-      ),
+                return ListView.builder(
+                  itemCount: users.length,
+                  itemBuilder: (context, index) {
+                    final user = users[index];
+                    return _buildUserTile(user, ref);
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text('Error: $error')),
+            ),
     );
   }
 
